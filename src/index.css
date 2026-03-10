@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --font-display: 'Space Grotesk', sans-serif;
+    --font-display: 'Syne', sans-serif;
     --font-body: 'Inter', sans-serif;
 
     --background: 0 0% 4%;
@@ -33,11 +33,11 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
+    --border: 0 0% 13%;
     --input: 0 0% 20%;
     --ring: 48 100% 50%;
 
-    --radius: 0.25rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 4%;
     --sidebar-foreground: 0 0% 70%;
@@ -45,21 +45,20 @@
     --sidebar-primary-foreground: 0 0% 4%;
     --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 20%;
+    --sidebar-border: 0 0% 13%;
     --sidebar-ring: 48 100% 50%;
 
-    /* Status colors */
     --status-ativo: 45 100% 47%;
     --status-lead: 217 91% 60%;
     --status-prospect: 25 95% 53%;
     --status-inativo: 220 9% 63%;
     --status-sem-compras: 0 84% 60%;
 
-    /* Heat / pressed */
     --heat: 40 100% 50%;
-
-    /* Gauge */
     --gauge: 45 100% 47%;
+
+    --success: 142 71% 45%;
+    --info: 217 91% 60%;
   }
 }
 
@@ -100,4 +99,20 @@
 /* Top accent line */
 .top-accent {
   border-top: 2px solid hsl(var(--primary));
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
 }

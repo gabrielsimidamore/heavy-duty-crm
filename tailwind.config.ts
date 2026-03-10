@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Space Grotesk", "sans-serif"],
+        display: ["Syne", "sans-serif"],
         body: ["Inter", "sans-serif"],
       },
       colors: {
@@ -70,6 +70,8 @@ export default {
         },
         heat: "hsl(var(--heat))",
         gauge: "hsl(var(--gauge))",
+        success: "hsl(var(--success))",
+        info: "hsl(var(--info))",
       },
       borderRadius: {
         lg: "var(--radius)",

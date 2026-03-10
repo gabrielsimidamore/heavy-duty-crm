@@ -7,6 +7,9 @@ import { AppLayout } from "@/components/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Clientes from "./pages/Clientes";
 import Historico from "./pages/Historico";
+import Vendas from "./pages/Vendas";
+import Projetos from "./pages/Projetos";
+import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +25,9 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/historico" element={<Historico />} />
+            <Route path="/vendas" element={<Vendas />} />
+            <Route path="/projetos" element={<Projetos />} />
+            <Route path="/configuracoes" element={<Configuracoes />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>

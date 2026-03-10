@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, History, Settings } from "lucide-react";
+import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -17,6 +17,9 @@ const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Clientes", url: "/clientes", icon: Users },
   { title: "Histórico", url: "/historico", icon: History },
+  { title: "Vendas", url: "/vendas", icon: DollarSign },
+  { title: "Projetos", url: "/projetos", icon: Lightbulb },
+  { title: "Configurações", url: "/configuracoes", icon: Settings },
 ];
 
 export function AppSidebar() {

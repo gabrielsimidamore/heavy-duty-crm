@@ -25,13 +25,13 @@ const typeIcons: Record<string, typeof Mail> = {
   "Reunião": Handshake,
 };
 
-const container = {
+const stagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06 } },
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 };
 
@@ -73,13 +73,17 @@ export default function Dashboard() {
 
   const today = "2026-03-10";
 
+  const tooltipStyle = {
+    backgroundColor: "hsla(0,0%,6%,0.85)",
+    backdropFilter: "blur(40px)",
+    border: "1px solid hsla(0,0%,100%,0.08)",
+    borderRadius: "16px",
+    fontFamily: "Inter",
+    boxShadow: "0 8px 32px hsla(0,0%,0%,0.4)",
+  };
+
   return (
-    <motion.div
-      className="p-6 space-y-6"
-      variants={container}
-      initial="hidden"
-      animate="show"
-    >
+    <motion.div className="p-6 space-y-6" variants={stagger} initial="hidden" animate="show">
       <motion.div variants={fadeUp} className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">
@@ -96,7 +100,7 @@ export default function Dashboard() {
             { label: "Nova Venda", path: "/vendas" },
             { label: "Novo Projeto", path: "/projetos" },
           ].map(btn => (
-            <Button key={btn.label} size="sm" onClick={() => navigate(btn.path)} className="text-xs font-display">
+            <Button key={btn.label} size="sm" onClick={() => navigate(btn.path)} className="text-xs font-display rounded-xl">
               <Plus className="h-3 w-3 mr-1" /> {btn.label}
             </Button>
           ))}
@@ -125,7 +129,7 @@ export default function Dashboard() {
                     <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} strokeWidth={0}>
                       {pieData.map((entry) => <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || "#666"} />)}
                     </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: "hsla(0,0%,7%,0.9)", backdropFilter: "blur(12px)", border: "1px solid hsla(0,0%,100%,0.08)", borderRadius: "12px", fontFamily: "Inter" }} />
+                    <Tooltip contentStyle={tooltipStyle} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -146,8 +150,8 @@ export default function Dashboard() {
                 <BarChart data={barData} layout="vertical">
                   <XAxis type="number" tick={{ fill: "#999", fontSize: 11, fontFamily: "Inter" }} />
                   <YAxis type="category" dataKey="name" width={100} tick={{ fill: "#999", fontSize: 10, fontFamily: "Inter" }} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsla(0,0%,7%,0.9)", backdropFilter: "blur(12px)", border: "1px solid hsla(0,0%,100%,0.08)", borderRadius: "12px", fontFamily: "Inter" }} />
-                  <Bar dataKey="value" fill="hsl(48 100% 50%)" radius={[0, 4, 4, 0]} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Bar dataKey="value" fill="hsl(48 100% 50%)" radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ),
@@ -157,10 +161,10 @@ export default function Dashboard() {
             content: (
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={lineData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsla(0,0%,100%,0.06)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsla(0,0%,100%,0.04)" />
                   <XAxis dataKey="month" tick={{ fill: "#999", fontSize: 9, fontFamily: "Inter" }} />
                   <YAxis tick={{ fill: "#999", fontSize: 11, fontFamily: "Inter" }} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsla(0,0%,7%,0.9)", backdropFilter: "blur(12px)", border: "1px solid hsla(0,0%,100%,0.08)", borderRadius: "12px", fontFamily: "Inter" }} />
+                  <Tooltip contentStyle={tooltipStyle} />
                   <Line type="monotone" dataKey="interações" stroke="hsl(48 100% 50%)" strokeWidth={2} dot={{ fill: "hsl(48 100% 50%)", r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -169,11 +173,11 @@ export default function Dashboard() {
         ].map((chart, idx) => (
           <motion.div
             key={chart.title}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 + idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.5, delay: 0.3 + idx * 0.1, ease: "easeOut" }}
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
-            className="glass rounded-xl p-4"
+            className="glass glass-shimmer rounded-2xl p-5"
           >
             <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
               {chart.title}
@@ -186,30 +190,32 @@ export default function Dashboard() {
       {/* Activity & Actions */}
       <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="glass rounded-xl p-4"
+          transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+          className="glass rounded-2xl p-5"
         >
           <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
             Atividade Recente
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {recentInteractions.map((i, idx) => {
               const Icon = typeIcons[i.type] || Mail;
               return (
                 <motion.div
                   key={i.id}
-                  initial={{ opacity: 0, x: -10 }}
+                  initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: 0.8 + idx * 0.05 }}
-                  className="flex items-start gap-3 text-sm p-2 rounded-lg hover:bg-secondary/30 transition-colors"
+                  transition={{ duration: 0.3, delay: 0.7 + idx * 0.04 }}
+                  className="flex items-start gap-3 text-sm p-2.5 rounded-xl glass-interactive cursor-default"
                 >
-                  <Icon className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-                  <div className="min-w-0">
+                  <div className="p-1.5 rounded-lg glass-subtle">
+                    <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-display text-xs text-muted-foreground">{formatDate(i.date)}</span>
-                      <span className="font-medium text-foreground">{i.empresa}</span>
+                      <span className="font-medium text-foreground text-sm">{i.empresa}</span>
                     </div>
                     <p className="text-xs text-muted-foreground truncate">{i.summary}</p>
                   </div>
@@ -220,10 +226,10 @@ export default function Dashboard() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
+          initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="glass rounded-xl p-4"
+          transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+          className="glass rounded-2xl p-5"
         >
           <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
             Próximas Ações
@@ -234,10 +240,10 @@ export default function Dashboard() {
               return (
                 <motion.div
                   key={i.id}
-                  initial={{ opacity: 0, x: 10 }}
+                  initial={{ opacity: 0, x: 8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: 0.8 + idx * 0.05 }}
-                  className={`text-sm p-2 rounded-lg transition-colors ${isOverdue ? "border-l-2 border-l-destructive action-pulse bg-destructive/5" : "border-l-2 border-l-border hover:bg-secondary/20"}`}
+                  transition={{ duration: 0.3, delay: 0.7 + idx * 0.04 }}
+                  className={`text-sm p-2.5 rounded-xl transition-colors ${isOverdue ? "border-l-2 border-l-destructive action-pulse glass-subtle bg-destructive/5" : "glass-interactive border-l-2 border-l-transparent"}`}
                 >
                   <div className="flex items-center gap-2">
                     <Clock className="h-3 w-3 text-muted-foreground" />

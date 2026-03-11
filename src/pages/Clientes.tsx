@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
+import { motion, AnimatePresence } from "framer-motion";
 
 const statuses: ClientStatus[] = ["Ativo", "Lead", "Prospect", "Inativo", "Sem compras"];
 const tipos: TipoEmpresa[] = ["Federações", "Locadoras", "Seguradoras", "Transportadora", "Associações", "Tecnologia"];
@@ -43,8 +44,18 @@ export default function Clientes() {
     : [];
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+    <motion.div
+      className="p-6 space-y-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex items-center justify-between flex-wrap gap-3"
+      >
         <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Clientes</h1>
         <div className="flex gap-2">
           <Button
@@ -69,7 +80,7 @@ export default function Clientes() {
                 <Plus className="h-3 w-3 mr-1" /> Novo Cliente
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[85vh] overflow-auto bg-popover border-border">
+            <DialogContent className="max-w-3xl max-h-[85vh] overflow-auto glass-strong rounded-xl border-border">
               <DialogHeader>
                 <DialogTitle className="font-display text-lg">Novo Cliente</DialogTitle>
               </DialogHeader>
@@ -77,10 +88,15 @@ export default function Clientes() {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+      </motion.div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="flex flex-wrap gap-3 items-center glass-subtle rounded-xl p-3"
+      >
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -108,107 +124,145 @@ export default function Clientes() {
             {tipos.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
           </SelectContent>
         </Select>
-      </div>
+      </motion.div>
 
-      {viewMode === "table" ? (
-        <div className="border border-border rounded-lg overflow-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-secondary/50 border-b border-border">
-                {["", "Contato", "Empresa", "Telefone", "E-mail", "Tipo", "Região", "Frota", "Status", "Score", "Ações"].map(h => (
-                  <th key={h} className="text-left px-3 py-2 font-display text-xs uppercase tracking-wider text-muted-foreground whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={11} className="text-center py-12 text-muted-foreground">
-                    <User className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                    <p className="font-display text-sm uppercase tracking-wider">Nenhum cliente encontrado</p>
-                  </td>
+      <AnimatePresence mode="wait">
+        {viewMode === "table" ? (
+          <motion.div
+            key="table"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="glass rounded-xl overflow-auto"
+          >
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-secondary/30 border-b border-border">
+                  {["", "Contato", "Empresa", "Telefone", "E-mail", "Tipo", "Região", "Frota", "Status", "Score", "Ações"].map(h => (
+                    <th key={h} className="text-left px-3 py-2 font-display text-xs uppercase tracking-wider text-muted-foreground whitespace-nowrap">{h}</th>
+                  ))}
                 </tr>
-              ) : (
-                filtered.map(c => (
-                  <tr
-                    key={c.id}
-                    onClick={() => setSelectedClient(c)}
-                    className="border-b border-border hover:bg-secondary/30 cursor-pointer transition-colors"
-                  >
-                    <td className="px-3 py-2.5">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-display text-xs flex items-center justify-center font-bold">
-                        {c.contato.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2.5 font-medium text-foreground whitespace-nowrap">{c.contato}</td>
-                    <td className="px-3 py-2.5 text-foreground whitespace-nowrap">{c.empresa}</td>
-                    <td className="px-3 py-2.5 text-muted-foreground whitespace-nowrap">{c.telefone}</td>
-                    <td className="px-3 py-2.5 text-muted-foreground text-xs">{c.email}</td>
-                    <td className="px-3 py-2.5 text-muted-foreground whitespace-nowrap text-xs">{c.tipoEmpresa}</td>
-                    <td className="px-3 py-2.5 text-muted-foreground">{c.regiao}</td>
-                    <td className="px-3 py-2.5 font-display text-muted-foreground">{c.frota ?? "—"}</td>
-                    <td className="px-3 py-2.5"><StatusBadge status={c.status} /></td>
-                    <td className="px-3 py-2.5 text-muted-foreground text-xs">{c.scoreFidelidade}</td>
-                    <td className="px-3 py-2.5">
-                      <Button variant="ghost" size="sm" className="text-xs h-7" onClick={e => { e.stopPropagation(); setSelectedClient(c); }}>
-                        Ver
-                      </Button>
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={11} className="text-center py-12 text-muted-foreground">
+                      <User className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="font-display text-sm uppercase tracking-wider">Nenhum cliente encontrado</p>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {kanbanColumns.map(col => (
-            <div key={col.status} className="space-y-3">
-              <div className={`flex items-center gap-2 pb-2 border-b-2 ${col.color}`}>
-                <StatusBadge status={col.status} />
-                <span className="text-xs text-muted-foreground">
-                  ({filtered.filter(c => c.status === col.status).length})
-                </span>
-              </div>
-              {filtered.filter(c => c.status === col.status).map(c => (
-                <div
-                  key={c.id}
-                  onClick={() => setSelectedClient(c)}
-                  className="bg-card border border-border rounded-lg p-3 cursor-pointer hover:border-primary/30 transition-colors"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-7 h-7 rounded-full bg-primary/10 text-primary font-display text-[10px] flex items-center justify-center font-bold">
-                      {c.contato.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground text-sm">{c.contato}</p>
-                      <p className="text-xs text-muted-foreground">{c.empresa}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{c.tipoEmpresa}</span>
-                    {c.frota && <span>• Frota: {c.frota}</span>}
-                  </div>
+                ) : (
+                  filtered.map((c, idx) => (
+                    <motion.tr
+                      key={c.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: idx * 0.03 }}
+                      onClick={() => setSelectedClient(c)}
+                      className="border-b border-border hover:bg-primary/5 cursor-pointer transition-all duration-200"
+                    >
+                      <td className="px-3 py-2.5">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-display text-xs flex items-center justify-center font-bold border border-primary/20">
+                          {c.contato.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2.5 font-medium text-foreground whitespace-nowrap">{c.contato}</td>
+                      <td className="px-3 py-2.5 text-foreground whitespace-nowrap">{c.empresa}</td>
+                      <td className="px-3 py-2.5 text-muted-foreground whitespace-nowrap">{c.telefone}</td>
+                      <td className="px-3 py-2.5 text-muted-foreground text-xs">{c.email}</td>
+                      <td className="px-3 py-2.5 text-muted-foreground whitespace-nowrap text-xs">{c.tipoEmpresa}</td>
+                      <td className="px-3 py-2.5 text-muted-foreground">{c.regiao}</td>
+                      <td className="px-3 py-2.5 font-display text-muted-foreground">{c.frota ?? "—"}</td>
+                      <td className="px-3 py-2.5"><StatusBadge status={c.status} /></td>
+                      <td className="px-3 py-2.5 text-muted-foreground text-xs">{c.scoreFidelidade}</td>
+                      <td className="px-3 py-2.5">
+                        <Button variant="ghost" size="sm" className="text-xs h-7" onClick={e => { e.stopPropagation(); setSelectedClient(c); }}>
+                          Ver
+                        </Button>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="kanban"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            {kanbanColumns.map((col, colIdx) => (
+              <motion.div
+                key={col.status}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: colIdx * 0.1 }}
+                className="space-y-3"
+              >
+                <div className={`flex items-center gap-2 pb-2 border-b-2 ${col.color}`}>
+                  <StatusBadge status={col.status} />
+                  <span className="text-xs text-muted-foreground">
+                    ({filtered.filter(c => c.status === col.status).length})
+                  </span>
                 </div>
-              ))}
-              {filtered.filter(c => c.status === col.status).length === 0 && (
-                <div className="text-center py-8 text-muted-foreground text-xs">Nenhum cliente</div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+                {filtered.filter(c => c.status === col.status).map((c, idx) => (
+                  <motion.div
+                    key={c.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: colIdx * 0.1 + idx * 0.05 }}
+                    whileHover={{ y: -3, scale: 1.02, transition: { duration: 0.15 } }}
+                    onClick={() => setSelectedClient(c)}
+                    className="glass rounded-xl p-3 cursor-pointer hover:border-primary/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-7 h-7 rounded-full bg-primary/10 text-primary font-display text-[10px] flex items-center justify-center font-bold border border-primary/20">
+                        {c.contato.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground text-sm">{c.contato}</p>
+                        <p className="text-xs text-muted-foreground">{c.empresa}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{c.tipoEmpresa}</span>
+                      {c.frota && <span>• Frota: {c.frota}</span>}
+                    </div>
+                  </motion.div>
+                ))}
+                {filtered.filter(c => c.status === col.status).length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground text-xs">Nenhum cliente</div>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Client Detail Drawer */}
       <Sheet open={!!selectedClient} onOpenChange={() => setSelectedClient(null)}>
-        <SheetContent className="bg-popover border-l border-border w-[420px] sm:w-[480px] overflow-auto">
+        <SheetContent className="glass-strong border-l border-border w-[420px] sm:w-[480px] overflow-auto">
           {selectedClient && (
-            <>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
               <SheetHeader>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary font-display text-lg flex items-center justify-center font-bold">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="w-12 h-12 rounded-full bg-primary/10 text-primary font-display text-lg flex items-center justify-center font-bold border border-primary/20"
+                  >
                     {selectedClient.contato.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-                  </div>
+                  </motion.div>
                   <div>
                     <SheetTitle className="font-display text-lg text-foreground">{selectedClient.contato}</SheetTitle>
                     <p className="text-sm text-muted-foreground">{selectedClient.empresa}</p>
@@ -229,13 +283,23 @@ export default function Clientes() {
                 </div>
 
                 {selectedClient.observacoes && (
-                  <div className="bg-secondary/30 rounded-lg p-3">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="glass-subtle rounded-xl p-3"
+                  >
                     <p className="text-xs font-display uppercase tracking-wider text-muted-foreground mb-1">Observações</p>
                     <p className="text-sm text-foreground">{selectedClient.observacoes}</p>
-                  </div>
+                  </motion.div>
                 )}
 
-                <div className="bg-secondary/30 rounded-lg p-3">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="glass-subtle rounded-xl p-3"
+                >
                   <p className="text-xs font-display uppercase tracking-wider text-muted-foreground mb-1">Interações Vinculadas</p>
                   <p className="font-display text-2xl font-bold text-primary">{clientInteractions.length}</p>
                   {clientInteractions.length > 0 && (
@@ -243,7 +307,7 @@ export default function Clientes() {
                       Último contato: {formatDate(clientInteractions.sort((a, b) => b.date.localeCompare(a.date))[0].date)}
                     </p>
                   )}
-                </div>
+                </motion.div>
 
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="flex-1 text-xs border-border hover:bg-secondary">
@@ -257,11 +321,11 @@ export default function Clientes() {
                   </Button>
                 </div>
               </div>
-            </>
+            </motion.div>
           )}
         </SheetContent>
       </Sheet>
-    </div>
+    </motion.div>
   );
 }
 
@@ -420,7 +484,7 @@ function NewClientForm({ onClose }: { onClose: () => void }) {
           <Label className="text-xs">Tags</Label>
           <Input className="bg-card border-border mt-1" placeholder="Separe por vírgula: tag1, tag2, tag3" />
         </div>
-        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center text-muted-foreground">
+        <div className="border-2 border-dashed border-border rounded-xl p-8 text-center text-muted-foreground hover:border-primary/30 transition-colors">
           <p className="text-sm">Arraste arquivos aqui ou clique para selecionar</p>
           <p className="text-xs mt-1">PDF, DOCX, XLSX, PNG, JPG, WebP</p>
         </div>

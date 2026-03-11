@@ -1,6 +1,5 @@
 import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -25,10 +24,9 @@ const items = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const location = useLocation();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border">
+    <Sidebar collapsible="icon" className="glass-sidebar border-r-0">
       <SidebarContent>
         <div className="p-4">
           {!collapsed && (
@@ -52,8 +50,8 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end={item.url === "/"}
-                      className="hover:bg-secondary"
-                      activeClassName="bg-secondary text-primary font-medium"
+                      className="hover:bg-foreground/5 rounded-xl transition-all duration-200"
+                      activeClassName="glass-subtle text-primary font-medium"
                     >
                       <item.icon className="mr-2 h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}

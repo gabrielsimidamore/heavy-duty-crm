@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { clients } from "@/data/clients";
 import { interactions } from "@/data/interactions";
 import { projects } from "@/data/projects";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [globalSearch, setGlobalSearch] = useState("");
@@ -44,8 +45,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex w-full top-accent">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-12 flex items-center border-b border-border px-4 gap-4">
-            <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+          <header className="h-12 flex items-center glass-bar px-4 gap-4 z-10 sticky top-0">
+            <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors" />
             <span className="font-display text-xs tracking-widest uppercase text-muted-foreground hidden sm:inline">
               Linha Autopeças — Linha Médio Pesado
             </span>
@@ -57,22 +58,30 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 onChange={e => { setGlobalSearch(e.target.value); setShowResults(true); }}
                 onFocus={() => setShowResults(true)}
                 onBlur={() => setTimeout(() => setShowResults(false), 200)}
-                className="pl-9 h-8 text-xs bg-secondary border-border"
+                className="pl-9 h-8 text-xs bg-transparent border-border/50 focus:border-primary/40 transition-all"
               />
-              {showResults && searchResults.length > 0 && (
-                <div className="absolute top-full mt-1 left-0 right-0 bg-popover border border-border rounded-lg shadow-lg z-50 max-h-64 overflow-auto">
-                  {searchResults.map((r, idx) => (
-                    <button
-                      key={idx}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors flex items-center gap-2"
-                      onMouseDown={() => { navigate(r.url); setGlobalSearch(""); setShowResults(false); }}
-                    >
-                      <span className="text-[10px] font-display uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded">{r.type}</span>
-                      <span className="text-foreground truncate">{r.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+              <AnimatePresence>
+                {showResults && searchResults.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute top-full mt-2 left-0 right-0 glass-elevated rounded-2xl z-50 max-h-64 overflow-auto p-1"
+                  >
+                    {searchResults.map((r, idx) => (
+                      <button
+                        key={idx}
+                        className="w-full text-left px-3 py-2.5 text-sm hover:bg-foreground/5 transition-colors flex items-center gap-2 rounded-xl"
+                        onMouseDown={() => { navigate(r.url); setGlobalSearch(""); setShowResults(false); }}
+                      >
+                        <span className="text-[10px] font-display uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded-md">{r.type}</span>
+                        <span className="text-foreground truncate">{r.label}</span>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </header>
           <main className="flex-1 overflow-auto">

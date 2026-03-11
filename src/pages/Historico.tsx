@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, Handshake, ChevronDown, ChevronUp, MapPin, Plus, Search, Paperclip, MessageSquare } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const typeConfig: Record<InteractionType, { icon: typeof Mail; color: string; label: string }> = {
   "E-mail": { icon: Mail, color: "text-status-lead", label: "E-mail" },
@@ -35,30 +36,44 @@ export default function Historico() {
   const uniqueClients = Array.from(new Map(clients.map(c => [c.id, c])).values());
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+    <motion.div
+      className="p-6 space-y-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between flex-wrap gap-3"
+      >
         <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Histórico de Interações</h1>
         <Dialog open={showNewInteraction} onOpenChange={setShowNewInteraction}>
           <DialogTrigger asChild>
-            <Button size="sm" className="text-xs font-display">
+            <Button size="sm" className="text-xs font-display rounded-xl">
               <Plus className="h-3 w-3 mr-1" /> Nova Interação
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[85vh] overflow-auto bg-popover border-border">
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-auto glass-elevated rounded-2xl border-0">
             <DialogHeader>
               <DialogTitle className="font-display text-lg">Nova Interação</DialogTitle>
             </DialogHeader>
             <NewInteractionForm onClose={() => setShowNewInteraction(false)} />
           </DialogContent>
         </Dialog>
-      </div>
+      </motion.div>
 
-      <div className="flex flex-wrap gap-3 items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="flex flex-wrap gap-3 items-center glass-subtle rounded-2xl p-3"
+      >
         <Select value={clientFilter} onValueChange={setClientFilter}>
-          <SelectTrigger className="w-[240px] bg-card border-border text-sm">
+          <SelectTrigger className="w-[240px] bg-transparent border-border/50 text-sm rounded-xl">
             <SelectValue placeholder="Filtrar por cliente" />
           </SelectTrigger>
-          <SelectContent className="bg-popover border-border">
+          <SelectContent className="glass-elevated border-0 rounded-2xl">
             <SelectItem value="all">Todos os Clientes</SelectItem>
             {uniqueClients.map(c => (
               <SelectItem key={c.id} value={c.id.toString()}>{c.contato} — {c.empresa}</SelectItem>
@@ -66,10 +81,10 @@ export default function Historico() {
           </SelectContent>
         </Select>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[160px] bg-card border-border text-sm">
+          <SelectTrigger className="w-[160px] bg-transparent border-border/50 text-sm rounded-xl">
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
-          <SelectContent className="bg-popover border-border">
+          <SelectContent className="glass-elevated border-0 rounded-2xl">
             <SelectItem value="all">Todos os Tipos</SelectItem>
             <SelectItem value="E-mail">E-mail</SelectItem>
             <SelectItem value="WhatsApp">WhatsApp</SelectItem>
@@ -82,22 +97,22 @@ export default function Historico() {
             placeholder="Buscar no resumo..."
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
-            className="pl-9 bg-card border-border text-sm h-9"
+            className="pl-9 bg-transparent border-border/50 text-sm h-9 rounded-xl"
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* Timeline */}
       <div className="relative">
-        <div className="absolute left-5 top-0 bottom-0 w-px bg-border" />
-        <div className="space-y-4">
+        <div className="absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-primary/20 via-border/30 to-transparent" />
+        <div className="space-y-3">
           {sorted.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-30" />
               <p className="font-display text-sm uppercase tracking-wider">Nenhuma interação encontrada</p>
             </div>
           ) : (
-            sorted.map(i => {
+            sorted.map((i, idx) => {
               const cfg = typeConfig[i.type];
               const Icon = cfg.icon;
               const isExpanded = expandedId === i.id;
@@ -105,13 +120,19 @@ export default function Historico() {
               const needsTruncation = i.summary.length > 100;
 
               return (
-                <div key={i.id} className="relative pl-12">
-                  <div className="absolute left-3 top-3 w-5 h-5 rounded-full flex items-center justify-center bg-card border border-border">
+                <motion.div
+                  key={i.id}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, delay: idx * 0.03 }}
+                  className="relative pl-12"
+                >
+                  <div className="absolute left-3 top-4 w-5 h-5 rounded-full flex items-center justify-center glass-subtle">
                     <Icon className={`h-3 w-3 ${cfg.color}`} />
                   </div>
                   <div
-                    className={`bg-card border border-border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:border-primary/20 ${
-                      isOverdue ? "border-l-2 border-l-destructive action-pulse" : "border-l-2 border-l-primary/30"
+                    className={`glass glass-shimmer rounded-2xl p-4 cursor-pointer transition-all duration-300 ${
+                      isOverdue ? "border-l-2 border-l-destructive action-pulse" : "border-l-2 border-l-primary/20"
                     }`}
                     onClick={() => setExpandedId(isExpanded ? null : i.id)}
                   >
@@ -125,7 +146,7 @@ export default function Historico() {
                           <MapPin className="h-3 w-3" /> {i.regiao}
                         </span>
                       )}
-                      <button className="ml-auto text-muted-foreground hover:text-foreground">
+                      <button className="ml-auto text-muted-foreground hover:text-foreground transition-colors">
                         {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </button>
                     </div>
@@ -134,25 +155,33 @@ export default function Historico() {
                       {i.summary}
                     </p>
 
-                    {(isExpanded || !needsTruncation) && i.proximaAcao && (
-                      <div className="mt-3 pt-3 border-t border-border">
-                        <p className="text-xs font-display uppercase tracking-wider text-muted-foreground">Próxima Ação</p>
-                        <p className="text-sm text-foreground mt-1">{i.proximaAcao}</p>
-                        {i.dataPrevista && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Data prevista: <span className={`font-display ${isOverdue ? "text-destructive" : "text-primary"}`}>{formatDate(i.dataPrevista)}</span>
-                          </p>
-                        )}
-                      </div>
-                    )}
+                    <AnimatePresence>
+                      {(isExpanded || !needsTruncation) && i.proximaAcao && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="mt-3 pt-3 border-t border-border/20"
+                        >
+                          <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">Próxima Ação</p>
+                          <p className="text-sm text-foreground mt-1">{i.proximaAcao}</p>
+                          {i.dataPrevista && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Data prevista: <span className={`font-display ${isOverdue ? "text-destructive" : "text-primary"}`}>{formatDate(i.dataPrevista)}</span>
+                            </p>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                </div>
+                </motion.div>
               );
             })
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -164,8 +193,8 @@ function NewInteractionForm({ onClose }: { onClose: () => void }) {
       <div>
         <Label className="text-xs">Cliente *</Label>
         <Select>
-          <SelectTrigger className="bg-card border-border mt-1"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
-          <SelectContent className="bg-popover border-border">
+          <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
+          <SelectContent className="glass-elevated border-0 rounded-2xl">
             {uniqueClients.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.contato} — {c.empresa}</SelectItem>)}
           </SelectContent>
         </Select>
@@ -173,13 +202,13 @@ function NewInteractionForm({ onClose }: { onClose: () => void }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label className="text-xs">Data *</Label>
-          <Input type="date" className="bg-card border-border mt-1" defaultValue="2026-03-10" />
+          <Input type="date" className="bg-transparent border-border/40 mt-1 rounded-xl" defaultValue="2026-03-10" />
         </div>
         <div>
           <Label className="text-xs">Tipo *</Label>
           <Select>
-            <SelectTrigger className="bg-card border-border mt-1"><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent className="bg-popover border-border">
+            <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
+            <SelectContent className="glass-elevated border-0 rounded-2xl">
               {["E-mail", "WhatsApp", "Reunião", "Ligação", "Visita Técnica", "LinkedIn", "Outro"].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -187,23 +216,23 @@ function NewInteractionForm({ onClose }: { onClose: () => void }) {
       </div>
       <div>
         <Label className="text-xs">Resumo da Conversa *</Label>
-        <Textarea className="bg-card border-border mt-1 min-h-[100px]" />
+        <Textarea className="bg-transparent border-border/40 mt-1 min-h-[100px] rounded-xl" />
       </div>
-      <div><Label className="text-xs">Região</Label><Input className="bg-card border-border mt-1" /></div>
+      <div><Label className="text-xs">Região</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
       <div>
         <Label className="text-xs">Próxima Ação</Label>
-        <Textarea className="bg-card border-border mt-1" />
+        <Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" />
       </div>
       <div>
         <Label className="text-xs">Data Prevista Próxima Ação</Label>
-        <Input type="date" className="bg-card border-border mt-1" />
+        <Input type="date" className="bg-transparent border-border/40 mt-1 rounded-xl" />
       </div>
-      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center text-muted-foreground">
+      <div className="border border-dashed border-border/30 rounded-2xl p-6 text-center text-muted-foreground glass-subtle hover:border-primary/20 transition-colors">
         <Paperclip className="h-5 w-5 mx-auto mb-1 opacity-50" />
         <p className="text-xs">Arraste arquivos ou cole imagens (Ctrl+V)</p>
       </div>
-      <div><Label className="text-xs">Tags</Label><Input className="bg-card border-border mt-1" placeholder="Separe por vírgula" /></div>
-      <Button className="w-full font-display" onClick={onClose}>Salvar Interação</Button>
+      <div><Label className="text-xs">Tags</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="Separe por vírgula" /></div>
+      <Button className="w-full font-display rounded-xl" onClick={onClose}>Salvar Interação</Button>
     </div>
   );
 }

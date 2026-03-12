@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Settings } from "lucide-react";
+import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Megaphone, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,

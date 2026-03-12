@@ -9,6 +9,7 @@ import Clientes from "./pages/Clientes";
 import Historico from "./pages/Historico";
 import Vendas from "./pages/Vendas";
 import Projetos from "./pages/Projetos";
+import Conteudo from "./pages/Conteudo";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Settings } from "lucide-react";
+import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Megaphone, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -18,6 +18,7 @@ const items = [
   { title: "Histórico", url: "/historico", icon: History },
   { title: "Vendas", url: "/vendas", icon: DollarSign },
   { title: "Projetos", url: "/projetos", icon: Lightbulb },
+  { title: "Conteúdo", url: "/conteudo", icon: Megaphone },
   { title: "Configurações", url: "/configuracoes", icon: Settings },
 ];
 

@@ -6,6 +6,7 @@ export interface ProjectTask {
   title: string;
   done: boolean;
   dueDate?: string;
+  responsavel?: string;
 }
 
 export interface Project {

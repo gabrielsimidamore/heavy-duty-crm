@@ -18,6 +18,7 @@ const items = [
   { title: "Histórico", url: "/historico", icon: History },
   { title: "Vendas", url: "/vendas", icon: DollarSign },
   { title: "Projetos", url: "/projetos", icon: Lightbulb },
+  { title: "Conteúdo", url: "/conteudo", icon: Megaphone },
   { title: "Configurações", url: "/configuracoes", icon: Settings },
 ];
 

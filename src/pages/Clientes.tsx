@@ -28,7 +28,11 @@ const kanbanColumns: { status: ClientStatus; color: string }[] = [
 ];
 
 export default function Clientes() {
-  const [clientsList, setClientsList] = useState<Client[]>(initialClients);
+  const { clients: initialClients, loading, setClients: setClientsList2 } = useClients();
+  const { interactions } = useInteractions();
+  const [clientsList, setClientsList] = useState<Client[]>([]);
+  const [initialized, setInitialized] = useState(false);
+  if (!initialized && initialClients.length > 0) { setClientsList(initialClients); setInitialized(true); }
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [tipoFilter, setTipoFilter] = useState<string>("all");

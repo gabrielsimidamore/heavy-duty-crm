@@ -23,6 +23,8 @@ const statusStyles: Record<SaleStatus, string> = {
 };
 
 export default function Vendas() {
+  const { sales, loading } = useSales();
+  const { clients } = useClients();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showNewSale, setShowNewSale] = useState(false);

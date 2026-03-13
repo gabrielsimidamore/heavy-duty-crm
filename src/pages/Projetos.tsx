@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { projects as initialProjects, type Project, type ProjectStatus, type ProjectPriority, type ProjectTask } from "@/data/projects";
-import { clients } from "@/data/clients";
+import { type Project, type ProjectStatus, type ProjectPriority, type ProjectTask } from "@/data/projects";
+import { useProjects } from "@/hooks/useProjects";
+import { useClients } from "@/hooks/useClients";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

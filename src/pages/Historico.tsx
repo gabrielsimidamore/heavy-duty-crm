@@ -18,6 +18,8 @@ const typeConfig: Record<InteractionType, { icon: typeof Mail; color: string; la
 };
 
 export default function Historico() {
+  const { interactions, loading } = useInteractions();
+  const { clients } = useClients();
   const [clientFilter, setClientFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [searchText, setSearchText] = useState("");

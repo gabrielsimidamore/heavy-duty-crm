@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { sales, type Sale, type SaleStatus } from "@/data/sales";
-import { clients } from "@/data/clients";
+import { type Sale, type SaleStatus } from "@/data/sales";
+import { useClients } from "@/hooks/useClients";
+import { useSales } from "@/hooks/useSales";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -22,6 +23,8 @@ const statusStyles: Record<SaleStatus, string> = {
 };
 
 export default function Vendas() {
+  const { sales, loading } = useSales();
+  const { clients } = useClients();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showNewSale, setShowNewSale] = useState(false);
@@ -166,6 +169,7 @@ export default function Vendas() {
 
 function NewSaleForm({ onClose }: { onClose: () => void }) {
   const [products, setProducts] = useState([{ codigo: "", descricao: "", marca: "", quantidade: 1, valorUnit: 0, desconto: 0 }]);
+  const { clients } = useClients();
   const uniqueClients = Array.from(new Map(clients.map(c => [c.id, c])).values());
 
   const addProduct = () => setProducts([...products, { codigo: "", descricao: "", marca: "", quantidade: 1, valorUnit: 0, desconto: 0 }]);

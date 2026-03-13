@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { contentPosts, type ContentPost, type SocialPlatform, type PostStatus } from "@/data/conteudo";
+import { type ContentPost, type SocialPlatform, type PostStatus } from "@/data/conteudo";
+import { useContentPosts } from "@/hooks/useContentPosts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -39,7 +40,7 @@ const statusBadge: Record<PostStatus, string> = {
 };
 
 export default function Conteudo() {
-  const [posts, setPosts] = useState<ContentPost[]>(contentPosts);
+  const { posts, loading, setPosts } = useContentPosts();
   const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [search, setSearch] = useState("");

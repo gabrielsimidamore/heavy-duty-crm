@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { clients as initialClients, type Client, type ClientStatus, type TipoEmpresa } from "@/data/clients";
-import { interactions } from "@/data/interactions";
+import { type Client, type ClientStatus, type TipoEmpresa } from "@/data/clients";
+import { useClients } from "@/hooks/useClients";
+import { useInteractions } from "@/hooks/useInteractions";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,7 +28,11 @@ const kanbanColumns: { status: ClientStatus; color: string }[] = [
 ];
 
 export default function Clientes() {
-  const [clientsList, setClientsList] = useState<Client[]>(initialClients);
+  const { clients: initialClients, loading, setClients: setClientsList2 } = useClients();
+  const { interactions } = useInteractions();
+  const [clientsList, setClientsList] = useState<Client[]>([]);
+  const [initialized, setInitialized] = useState(false);
+  if (!initialized && initialClients.length > 0) { setClientsList(initialClients); setInitialized(true); }
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [tipoFilter, setTipoFilter] = useState<string>("all");

@@ -4,15 +4,18 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { clients } from "@/data/clients";
-import { interactions } from "@/data/interactions";
-import { projects } from "@/data/projects";
+import { useClients } from "@/hooks/useClients";
+import { useInteractions } from "@/hooks/useInteractions";
+import { useProjects } from "@/hooks/useProjects";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [globalSearch, setGlobalSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
   const navigate = useNavigate();
+  const { clients } = useClients();
+  const { interactions } = useInteractions();
+  const { projects } = useProjects();
 
   const searchResults = globalSearch.length >= 2 ? [
     ...clients

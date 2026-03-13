@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { projects as initialProjects, type Project, type ProjectStatus, type ProjectPriority, type ProjectTask } from "@/data/projects";
-import { clients } from "@/data/clients";
+import { type Project, type ProjectStatus, type ProjectPriority, type ProjectTask } from "@/data/projects";
+import { useProjects } from "@/hooks/useProjects";
+import { useClients } from "@/hooks/useClients";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -32,7 +33,11 @@ const priorityBadge: Record<ProjectPriority, string> = {
 };
 
 export default function Projetos() {
-  const [projectsList, setProjectsList] = useState<Project[]>(initialProjects);
+  const { projects: initialProjects, loading } = useProjects();
+  const { clients } = useClients();
+  const [projectsList, setProjectsList] = useState<Project[]>([]);
+  const [initialized, setInitialized] = useState(false);
+  if (!initialized && initialProjects.length > 0) { setProjectsList(initialProjects); setInitialized(true); }
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
   const [showNewProject, setShowNewProject] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -369,6 +374,7 @@ export default function Projetos() {
 
 function NewProjectForm({ onClose }: { onClose: () => void }) {
   const [progresso, setProgresso] = useState([0]);
+  const { clients } = useClients();
   const uniqueClients = Array.from(new Map(clients.map(c => [c.id, c])).values());
 
   return (

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { interactions, type InteractionType } from "@/data/interactions";
-import { clients } from "@/data/clients";
+import { type InteractionType } from "@/data/interactions";
+import { useInteractions } from "@/hooks/useInteractions";
+import { useClients } from "@/hooks/useClients";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ const typeConfig: Record<InteractionType, { icon: typeof Mail; color: string; la
 };
 
 export default function Historico() {
+  const { interactions, loading } = useInteractions();
+  const { clients } = useClients();
   const [clientFilter, setClientFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [searchText, setSearchText] = useState("");
@@ -186,6 +189,7 @@ export default function Historico() {
 }
 
 function NewInteractionForm({ onClose }: { onClose: () => void }) {
+  const { clients } = useClients();
   const uniqueClients = Array.from(new Map(clients.map(c => [c.id, c])).values());
 
   return (

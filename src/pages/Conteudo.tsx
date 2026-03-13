@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { contentPosts, type ContentPost, type SocialPlatform, type PostStatus } from "@/data/conteudo";
+import { type ContentPost, type SocialPlatform, type PostStatus } from "@/data/conteudo";
+import { useContentPosts } from "@/hooks/useContentPosts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

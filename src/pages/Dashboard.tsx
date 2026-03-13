@@ -1,9 +1,9 @@
 import { Users, UserCheck, UserPlus, Eye, AlertTriangle, Lightbulb, Plus, Mail, Phone, Handshake, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { KpiCard } from "@/components/KpiCard";
-import { clients } from "@/data/clients";
-import { interactions } from "@/data/interactions";
-import { projects } from "@/data/projects";
+import { useClients } from "@/hooks/useClients";
+import { useInteractions } from "@/hooks/useInteractions";
+import { useProjects } from "@/hooks/useProjects";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import {

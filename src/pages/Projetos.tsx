@@ -33,7 +33,11 @@ const priorityBadge: Record<ProjectPriority, string> = {
 };
 
 export default function Projetos() {
-  const [projectsList, setProjectsList] = useState<Project[]>(initialProjects);
+  const { projects: initialProjects, loading } = useProjects();
+  const { clients } = useClients();
+  const [projectsList, setProjectsList] = useState<Project[]>([]);
+  const [initialized, setInitialized] = useState(false);
+  if (!initialized && initialProjects.length > 0) { setProjectsList(initialProjects); setInitialized(true); }
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
   const [showNewProject, setShowNewProject] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);

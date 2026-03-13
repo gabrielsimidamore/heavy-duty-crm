@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { clients as initialClients, type Client, type ClientStatus, type TipoEmpresa } from "@/data/clients";
-import { interactions } from "@/data/interactions";
+import { type Client, type ClientStatus, type TipoEmpresa } from "@/data/clients";
+import { useClients } from "@/hooks/useClients";
+import { useInteractions } from "@/hooks/useInteractions";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

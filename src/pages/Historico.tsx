@@ -189,6 +189,7 @@ export default function Historico() {
 }
 
 function NewInteractionForm({ onClose }: { onClose: () => void }) {
+  const { clients } = useClients();
   const uniqueClients = Array.from(new Map(clients.map(c => [c.id, c])).values());
 
   return (

@@ -374,6 +374,7 @@ export default function Projetos() {
 
 function NewProjectForm({ onClose }: { onClose: () => void }) {
   const [progresso, setProgresso] = useState([0]);
+  const { clients } = useClients();
   const uniqueClients = Array.from(new Map(clients.map(c => [c.id, c])).values());
 
   return (

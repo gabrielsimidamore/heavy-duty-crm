@@ -169,6 +169,7 @@ export default function Vendas() {
 
 function NewSaleForm({ onClose }: { onClose: () => void }) {
   const [products, setProducts] = useState([{ codigo: "", descricao: "", marca: "", quantidade: 1, valorUnit: 0, desconto: 0 }]);
+  const { clients } = useClients();
   const uniqueClients = Array.from(new Map(clients.map(c => [c.id, c])).values());
 
   const addProduct = () => setProducts([...products, { codigo: "", descricao: "", marca: "", quantidade: 1, valorUnit: 0, desconto: 0 }]);

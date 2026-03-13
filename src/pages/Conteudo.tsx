@@ -40,7 +40,7 @@ const statusBadge: Record<PostStatus, string> = {
 };
 
 export default function Conteudo() {
-  const [posts, setPosts] = useState<ContentPost[]>(contentPosts);
+  const { posts, loading, setPosts } = useContentPosts();
   const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [search, setSearch] = useState("");

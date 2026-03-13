@@ -13,6 +13,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const [globalSearch, setGlobalSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
   const navigate = useNavigate();
+  const { clients } = useClients();
+  const { interactions } = useInteractions();
+  const { projects } = useProjects();
 
   const searchResults = globalSearch.length >= 2 ? [
     ...clients

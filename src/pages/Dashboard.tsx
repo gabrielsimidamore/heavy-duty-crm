@@ -37,6 +37,9 @@ const fadeUp = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { clients } = useClients();
+  const { interactions } = useInteractions();
+  const { projects } = useProjects();
   const ativos = clients.filter(c => c.status === "Ativo");
   const leads = clients.filter(c => c.status === "Lead");
   const prospects = clients.filter(c => c.status === "Prospect");

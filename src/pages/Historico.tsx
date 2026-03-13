@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { interactions, type InteractionType } from "@/data/interactions";
-import { clients } from "@/data/clients";
+import { type InteractionType } from "@/data/interactions";
+import { useInteractions } from "@/hooks/useInteractions";
+import { useClients } from "@/hooks/useClients";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

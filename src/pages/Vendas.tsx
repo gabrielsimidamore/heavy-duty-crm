@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { sales, type Sale, type SaleStatus } from "@/data/sales";
-import { clients } from "@/data/clients";
+import { type Sale, type SaleStatus } from "@/data/sales";
+import { useClients } from "@/hooks/useClients";
+import { useSales } from "@/hooks/useSales";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

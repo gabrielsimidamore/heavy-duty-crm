@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Megaphone, Settings, Truck, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Megaphone, Settings, ChevronRight } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { useInteractions } from "@/hooks/useInteractions";
@@ -36,14 +36,14 @@ export function AppSidebar() {
       <SidebarContent className="flex flex-col h-full overflow-hidden" style={{ background: "#111111" }}>
 
         {/* Logo */}
-        <div className={cn("flex items-center gap-3 border-b shrink-0", collapsed ? "px-3 py-4 justify-center" : "px-4 py-4")} style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-            <Truck className="h-[15px] w-[15px] text-white" strokeWidth={2.5} />
-          </div>
-          {!collapsed && (
-            <div className="min-w-0">
-              <p className="text-[13px] font-semibold leading-tight truncate" style={{ color: "#fff" }}>Junior Pinheiro</p>
-              <p className="text-[10px] leading-tight mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>CRM · Autopeças</p>
+        <div className={cn("flex items-center justify-center border-b shrink-0", collapsed ? "px-3 py-3" : "px-4 py-3")} style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+          {collapsed ? (
+            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="Torke 360" style={{ width: "28px", height: "28px", objectFit: "contain" }} />
+            </div>
+          ) : (
+            <div className="w-full flex items-center justify-center py-1">
+              <img src="/logo.png" alt="Torke 360" style={{ height: "36px", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
             </div>
           )}
         </div>

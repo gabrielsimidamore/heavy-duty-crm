@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, Handshake, ChevronDown, ChevronUp, MapPin, Plus, Search, Paperclip, MessageSquare, PhoneCall, Wrench, Linkedin } from "lucide-react";
+import { Mail, Phone, Handshake, ChevronDown, ChevronUp, MapPin, Plus, Search, Paperclip, MessageSquare, PhoneCall, Wrench, Linkedin, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
 
 const typeConfig: Record<string, { icon: typeof Mail; color: string; label: string }> = {
   "E-mail": { icon: Mail, color: "text-status-lead", label: "E-mail" },
@@ -22,17 +24,19 @@ const typeConfig: Record<string, { icon: typeof Mail; color: string; label: stri
 };
 
 const defaultTypeConfig = { icon: MessageSquare, color: "text-muted-foreground", label: "Outro" };
+const today = new Date().toISOString().slice(0, 10);
 
 export default function Historico() {
-  const { interactions, loading } = useInteractions();
+  const { interactions, loading, addInteraction } = useInteractions();
   const { clients } = useClients();
-  const [clientFilter, setClientFilter] = useState<string>("all");
+  const [searchParams] = useSearchParams();
+  const clienteParam = searchParams.get("cliente") || "all";
+
+  const [clientFilter, setClientFilter] = useState<string>(clienteParam);
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [searchText, setSearchText] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [showNewInteraction, setShowNewInteraction] = useState(false);
-
-  const today = "2026-03-10";
 
   const filtered = interactions.filter(i => {
     const matchClient = clientFilter === "all" || i.clientId.toString() === clientFilter;
@@ -67,7 +71,10 @@ export default function Historico() {
             <DialogHeader>
               <DialogTitle className="font-display text-lg">Nova Interação</DialogTitle>
             </DialogHeader>
-            <NewInteractionForm onClose={() => setShowNewInteraction(false)} />
+            <NewInteractionForm
+              onClose={() => setShowNewInteraction(false)}
+              addInteraction={addInteraction}
+            />
           </DialogContent>
         </Dialog>
       </motion.div>
@@ -95,9 +102,9 @@ export default function Historico() {
           </SelectTrigger>
           <SelectContent className="glass-elevated border-0 rounded-2xl">
             <SelectItem value="all">Todos os Tipos</SelectItem>
-            <SelectItem value="E-mail">E-mail</SelectItem>
-            <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-            <SelectItem value="Reunião">Reunião</SelectItem>
+            {Object.keys(typeConfig).map(t => (
+              <SelectItem key={t} value={t}>{t}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div className="relative flex-1 min-w-[180px] max-w-xs">
@@ -115,7 +122,12 @@ export default function Historico() {
       <div className="relative">
         <div className="absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-primary/20 via-border/30 to-transparent" />
         <div className="space-y-3">
-          {sorted.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Loader2 className="h-6 w-6 mx-auto mb-2 animate-spin opacity-50" />
+              <p className="font-display text-sm uppercase tracking-wider">Carregando...</p>
+            </div>
+          ) : sorted.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-30" />
               <p className="font-display text-sm uppercase tracking-wider">Nenhuma interação encontrada</p>
@@ -194,15 +206,58 @@ export default function Historico() {
   );
 }
 
-function NewInteractionForm({ onClose }: { onClose: () => void }) {
+function NewInteractionForm({ onClose, addInteraction }: {
+  onClose: () => void;
+  addInteraction: (i: any) => Promise<boolean>;
+}) {
   const { clients } = useClients();
   const uniqueClients = Array.from(new Map(clients.map(c => [c.id, c])).values());
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    clientId: "",
+    date: today,
+    type: "",
+    summary: "",
+    regiao: "",
+    proximaAcao: "",
+    dataPrevista: "",
+  });
+
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleSave = async () => {
+    if (!form.clientId || !form.type || !form.summary) {
+      toast.error("Preencha os campos obrigatórios: Cliente, Tipo e Resumo");
+      return;
+    }
+    const client = uniqueClients.find(c => c.id.toString() === form.clientId);
+    if (!client) return;
+    setSaving(true);
+    const ok = await addInteraction({
+      clientId: client.id,
+      clientName: client.contato,
+      empresa: client.empresa,
+      date: form.date,
+      type: form.type as InteractionType,
+      summary: form.summary,
+      proximaAcao: form.proximaAcao,
+      dataPrevista: form.dataPrevista || undefined,
+      regiao: form.regiao || undefined,
+    });
+    setSaving(false);
+    if (ok) {
+      toast.success("Interação salva com sucesso!");
+      onClose();
+    } else {
+      toast.error("Erro ao salvar. Tente novamente.");
+    }
+  };
 
   return (
     <div className="space-y-4">
       <div>
         <Label className="text-xs">Cliente *</Label>
-        <Select>
+        <Select value={form.clientId} onValueChange={v => set("clientId", v)}>
           <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
           <SelectContent className="glass-elevated border-0 rounded-2xl">
             {uniqueClients.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.contato} — {c.empresa}</SelectItem>)}
@@ -212,37 +267,41 @@ function NewInteractionForm({ onClose }: { onClose: () => void }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label className="text-xs">Data *</Label>
-          <Input type="date" className="bg-transparent border-border/40 mt-1 rounded-xl" defaultValue="2026-03-10" />
+          <Input type="date" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.date} onChange={e => set("date", e.target.value)} />
         </div>
         <div>
           <Label className="text-xs">Tipo *</Label>
-          <Select>
+          <Select value={form.type} onValueChange={v => set("type", v)}>
             <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
             <SelectContent className="glass-elevated border-0 rounded-2xl">
-              {["E-mail", "WhatsApp", "Reunião", "Ligação", "Visita Técnica", "LinkedIn", "Outro"].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+              {Object.keys(typeConfig).map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
       </div>
       <div>
         <Label className="text-xs">Resumo da Conversa *</Label>
-        <Textarea className="bg-transparent border-border/40 mt-1 min-h-[100px] rounded-xl" />
+        <Textarea className="bg-transparent border-border/40 mt-1 min-h-[100px] rounded-xl" value={form.summary} onChange={e => set("summary", e.target.value)} />
       </div>
-      <div><Label className="text-xs">Região</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
+      <div><Label className="text-xs">Região</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.regiao} onChange={e => set("regiao", e.target.value)} /></div>
       <div>
         <Label className="text-xs">Próxima Ação</Label>
-        <Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" />
+        <Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.proximaAcao} onChange={e => set("proximaAcao", e.target.value)} />
       </div>
       <div>
         <Label className="text-xs">Data Prevista Próxima Ação</Label>
-        <Input type="date" className="bg-transparent border-border/40 mt-1 rounded-xl" />
+        <Input type="date" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.dataPrevista} onChange={e => set("dataPrevista", e.target.value)} />
       </div>
       <div className="border border-dashed border-border/30 rounded-2xl p-6 text-center text-muted-foreground glass-subtle hover:border-primary/20 transition-colors">
         <Paperclip className="h-5 w-5 mx-auto mb-1 opacity-50" />
         <p className="text-xs">Arraste arquivos ou cole imagens (Ctrl+V)</p>
       </div>
-      <div><Label className="text-xs">Tags</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="Separe por vírgula" /></div>
-      <Button className="w-full font-display rounded-xl" onClick={onClose}>Salvar Interação</Button>
+      <div className="flex gap-2">
+        <Button variant="outline" className="flex-1 rounded-xl border-border/30" onClick={onClose} disabled={saving}>Cancelar</Button>
+        <Button className="flex-1 font-display rounded-xl" onClick={handleSave} disabled={saving}>
+          {saving ? <><Loader2 className="h-3 w-3 mr-1 animate-spin" /> Salvando...</> : "Salvar Interação"}
+        </Button>
+      </div>
     </div>
   );
 }

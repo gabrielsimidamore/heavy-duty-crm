@@ -65,7 +65,7 @@ export default function Clientes() {
   return (
     <motion.div className="p-6 space-y-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Clientes</h1>
+        <h1 className="text-xl font-bold text-foreground font-display">Clientes</h1>
         <div className="flex gap-2">
           <Button variant={viewMode === "table" ? "default" : "outline"} size="icon" className="h-8 w-8 rounded-xl" onClick={() => setViewMode("table")}><List className="h-4 w-4" /></Button>
           <Button variant={viewMode === "kanban" ? "default" : "outline"} size="icon" className="h-8 w-8 rounded-xl" onClick={() => setViewMode("kanban")}><LayoutGrid className="h-4 w-4" /></Button>
@@ -73,7 +73,7 @@ export default function Clientes() {
             <DialogTrigger asChild>
               <Button size="sm" className="text-xs font-display rounded-xl"><Plus className="h-3 w-3 mr-1" /> Novo Cliente</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[85vh] overflow-auto glass-elevated rounded-2xl border-0">
+            <DialogContent className="max-w-3xl max-h-[85vh] overflow-auto card-elevated border-border/60 rounded-xl">
               <DialogHeader><DialogTitle className="font-display text-lg">Novo Cliente</DialogTitle></DialogHeader>
               <NewClientForm onClose={() => setShowNewClient(false)} addClient={addClient} />
             </DialogContent>
@@ -82,21 +82,21 @@ export default function Clientes() {
       </motion.div>
 
       {/* Filters */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }} className="flex flex-wrap gap-3 items-center glass-subtle rounded-2xl p-3">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }} className="flex flex-wrap gap-3 items-center card-surface rounded-xl p-3">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar por nome, empresa ou CNPJ..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 bg-transparent border-border/50 text-sm rounded-xl" />
+          <Input placeholder="Buscar por nome, empresa ou CNPJ..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 bg-white/[0.03] border-border/60 text-xs rounded-lg" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px] bg-transparent border-border/50 text-sm rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
-          <SelectContent className="glass-elevated border-0 rounded-2xl">
+          <SelectTrigger className="w-[160px] bg-white/[0.03] border-border/60 text-xs rounded-lg"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectContent className="card-elevated border-border/60 rounded-xl">
             <SelectItem value="all">Todos Status</SelectItem>
             {statuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={tipoFilter} onValueChange={setTipoFilter}>
-          <SelectTrigger className="w-[180px] bg-transparent border-border/50 text-sm rounded-xl"><SelectValue placeholder="Tipo" /></SelectTrigger>
-          <SelectContent className="glass-elevated border-0 rounded-2xl">
+          <SelectTrigger className="w-[180px] bg-white/[0.03] border-border/60 text-xs rounded-lg"><SelectValue placeholder="Tipo" /></SelectTrigger>
+          <SelectContent className="card-elevated border-border/60 rounded-xl">
             <SelectItem value="all">Todos Tipos</SelectItem>
             {tipos.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
           </SelectContent>
@@ -105,7 +105,7 @@ export default function Clientes() {
 
       <AnimatePresence mode="wait">
         {viewMode === "table" ? (
-          <motion.div key="table" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="glass rounded-2xl overflow-hidden w-full">
+          <motion.div key="table" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="card-surface rounded-xl overflow-hidden w-full">
             {loading ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Loader2 className="h-6 w-6 mx-auto mb-2 animate-spin opacity-50" />
@@ -194,7 +194,7 @@ export default function Clientes() {
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               onClick={() => setSelectedClient(c)}
-                              className={`glass glass-shimmer rounded-2xl p-3.5 cursor-grab active:cursor-grabbing transition-all ${snapshot.isDragging ? "ring-2 ring-primary/40 shadow-xl shadow-primary/10 scale-105" : ""}`}
+                              className={`card-surface card-hover rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all ${snapshot.isDragging ? "ring-2 ring-primary/40 shadow-xl shadow-primary/10 scale-105" : ""}`}
                             >
                               <div className="flex items-center gap-2 mb-2">
                                 <div className="w-7 h-7 rounded-full glass-subtle text-primary font-display text-[10px] flex items-center justify-center font-bold">{c.contato.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}</div>
@@ -226,7 +226,7 @@ export default function Clientes() {
 
       {/* Client Detail Drawer */}
       <Sheet open={!!selectedClient} onOpenChange={() => setSelectedClient(null)}>
-        <SheetContent className="glass-elevated border-l-0 w-[420px] sm:w-[480px] overflow-auto rounded-l-3xl">
+        <SheetContent className="card-elevated border-l border-border/50 w-[420px] sm:w-[480px] overflow-auto">
           {selectedClient && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35, ease: "easeOut" }}>
               <SheetHeader>
@@ -254,12 +254,12 @@ export default function Clientes() {
                   {selectedClient.cnpj && <DetailRow label="CNPJ" value={selectedClient.cnpj} />}
                 </div>
                 {selectedClient.observacoes && (
-                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-subtle rounded-2xl p-3.5">
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white/[0.03] border border-border/40 rounded-lg p-3.5">
                     <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Observações</p>
                     <p className="text-sm text-foreground">{selectedClient.observacoes}</p>
                   </motion.div>
                 )}
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-subtle rounded-2xl p-3.5">
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white/[0.03] border border-border/40 rounded-lg p-3.5">
                   <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Interações Vinculadas</p>
                   <p className="font-display text-2xl font-bold text-primary">{clientInteractions.length}</p>
                   {clientInteractions.length > 0 && (
@@ -322,7 +322,7 @@ function NewClientForm({ onClose, addClient }: { onClose: () => void; addClient:
 
   return (
     <Tabs defaultValue="dados" className="w-full">
-      <TabsList className="w-full glass-subtle rounded-xl">
+      <TabsList className="w-full bg-white/[0.03] border border-border/40 rounded-lg">
         <TabsTrigger value="dados" className="flex-1 text-xs rounded-lg">Dados Gerais</TabsTrigger>
         <TabsTrigger value="frota" className="flex-1 text-xs rounded-lg">Frota</TabsTrigger>
         <TabsTrigger value="comercial" className="flex-1 text-xs rounded-lg">Comercial</TabsTrigger>
@@ -332,41 +332,41 @@ function NewClientForm({ onClose, addClient }: { onClose: () => void; addClient:
 
       <TabsContent value="dados" className="space-y-4 mt-4">
         <div className="grid grid-cols-2 gap-3">
-          <div><Label className="text-xs">Nome do Contato *</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.contato} onChange={e => set("contato", e.target.value)} /></div>
-          <div><Label className="text-xs">Cargo</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.cargo} onChange={e => set("cargo", e.target.value)} /></div>
-          <div><Label className="text-xs">Empresa *</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.empresa} onChange={e => set("empresa", e.target.value)} /></div>
-          <div><Label className="text-xs">CNPJ</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="00.000.000/0000-00" value={form.cnpj} onChange={e => set("cnpj", e.target.value)} /></div>
-          <div><Label className="text-xs">Telefone</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.telefone} onChange={e => set("telefone", e.target.value)} /></div>
-          <div><Label className="text-xs">WhatsApp</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.whatsapp} onChange={e => set("whatsapp", e.target.value)} /></div>
-          <div><Label className="text-xs">E-mail</Label><Input type="email" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.email} onChange={e => set("email", e.target.value)} /></div>
-          <div><Label className="text-xs">Site</Label><Input type="url" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.site} onChange={e => set("site", e.target.value)} /></div>
+          <div><Label className="text-xs">Nome do Contato *</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.contato} onChange={e => set("contato", e.target.value)} /></div>
+          <div><Label className="text-xs">Cargo</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.cargo} onChange={e => set("cargo", e.target.value)} /></div>
+          <div><Label className="text-xs">Empresa *</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.empresa} onChange={e => set("empresa", e.target.value)} /></div>
+          <div><Label className="text-xs">CNPJ</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" placeholder="00.000.000/0000-00" value={form.cnpj} onChange={e => set("cnpj", e.target.value)} /></div>
+          <div><Label className="text-xs">Telefone</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.telefone} onChange={e => set("telefone", e.target.value)} /></div>
+          <div><Label className="text-xs">WhatsApp</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.whatsapp} onChange={e => set("whatsapp", e.target.value)} /></div>
+          <div><Label className="text-xs">E-mail</Label><Input type="email" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.email} onChange={e => set("email", e.target.value)} /></div>
+          <div><Label className="text-xs">Site</Label><Input type="url" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.site} onChange={e => set("site", e.target.value)} /></div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div><Label className="text-xs">Status *</Label>
             <Select value={form.status} onValueChange={v => set("status", v)}>
-              <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="glass-elevated border-0 rounded-2xl">{statuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+              <SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="card-elevated border-border/60 rounded-xl">{statuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
             </Select></div>
           <div><Label className="text-xs">Tipo de Empresa *</Label>
             <Select value={form.tipoEmpresa} onValueChange={v => set("tipoEmpresa", v)}>
-              <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="glass-elevated border-0 rounded-2xl">{tipos.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+              <SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="card-elevated border-border/60 rounded-xl">{tipos.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
             </Select></div>
           <div><Label className="text-xs">Origem do Lead</Label>
             <Select value={form.origemLead} onValueChange={v => set("origemLead", v)}>
-              <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="glass-elevated border-0 rounded-2xl">{["Indicação", "LinkedIn", "E-mail Mkt", "Ligação", "Evento", "Site", "Outro"].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+              <SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="card-elevated border-border/60 rounded-xl">{["Indicação", "LinkedIn", "E-mail Mkt", "Ligação", "Evento", "Site", "Outro"].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
             </Select></div>
-          <div><Label className="text-xs">Região de Atuação</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.regiao} onChange={e => set("regiao", e.target.value)} /></div>
+          <div><Label className="text-xs">Região de Atuação</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.regiao} onChange={e => set("regiao", e.target.value)} /></div>
         </div>
         <div><Label className="text-xs">Endereço Completo</Label><Textarea className="bg-transparent border-border/40 mt-1 min-h-[60px] rounded-xl" value={form.endereco} onChange={e => set("endereco", e.target.value)} /></div>
       </TabsContent>
 
       <TabsContent value="frota" className="space-y-4 mt-4">
         <div className="grid grid-cols-2 gap-3">
-          <div><Label className="text-xs">Quantidade Total de Veículos</Label><Input type="number" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.frota} onChange={e => set("frota", e.target.value)} /></div>
+          <div><Label className="text-xs">Quantidade Total de Veículos</Label><Input type="number" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.frota} onChange={e => set("frota", e.target.value)} /></div>
         </div>
-        <div><Label className="text-xs">Marcas Principais</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="Mercedes-Benz, Volks, Scania..." value={form.marcaPrincipal} onChange={e => set("marcaPrincipal", e.target.value)} /></div>
+        <div><Label className="text-xs">Marcas Principais</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" placeholder="Mercedes-Benz, Volks, Scania..." value={form.marcaPrincipal} onChange={e => set("marcaPrincipal", e.target.value)} /></div>
       </TabsContent>
 
       <TabsContent value="comercial" className="space-y-4 mt-4">
@@ -377,16 +377,16 @@ function NewClientForm({ onClose, addClient }: { onClose: () => void; addClient:
             <span className="text-destructive">0 - Baixo</span><span className="text-status-prospect">31 - Médio</span><span className="text-primary">61 - Alto</span>
           </div>
         </div>
-        <div><Label className="text-xs">Concorrentes que Atende</Label><Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.concorrentes} onChange={e => set("concorrentes", e.target.value)} /></div>
+        <div><Label className="text-xs">Concorrentes que Atende</Label><Textarea className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.concorrentes} onChange={e => set("concorrentes", e.target.value)} /></div>
       </TabsContent>
 
       <TabsContent value="parceria" className="space-y-4 mt-4">
-        <div><Label className="text-xs">Observações Contratuais</Label><Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.obsParceria} onChange={e => set("obsParceria", e.target.value)} /></div>
+        <div><Label className="text-xs">Observações Contratuais</Label><Textarea className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" value={form.obsParceria} onChange={e => set("obsParceria", e.target.value)} /></div>
       </TabsContent>
 
       <TabsContent value="obs" className="space-y-4 mt-4">
         <div><Label className="text-xs">Observações Gerais</Label><Textarea className="bg-transparent border-border/40 mt-1 min-h-[120px] rounded-xl" placeholder="Informações adicionais sobre o cliente..." value={form.observacoes} onChange={e => set("observacoes", e.target.value)} /></div>
-        <div><Label className="text-xs">Tags</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="Separe por vírgula: tag1, tag2, tag3" value={form.tags} onChange={e => set("tags", e.target.value)} /></div>
+        <div><Label className="text-xs">Tags</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" placeholder="Separe por vírgula: tag1, tag2, tag3" value={form.tags} onChange={e => set("tags", e.target.value)} /></div>
       </TabsContent>
 
       <div className="flex gap-2 mt-6">

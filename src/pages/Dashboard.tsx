@@ -1,6 +1,7 @@
-import { Users, UserCheck, UserPlus, Eye, AlertTriangle, Lightbulb, Plus, Mail, Phone, Handshake, Clock } from "lucide-react";
+import { Users, UserCheck, UserPlus, Eye, AlertTriangle, Lightbulb, Plus, Mail, Phone, Handshake, Clock, ArrowRight, TrendingUp, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { KpiCard } from "@/components/KpiCard";
+import { StatusBadge } from "@/components/StatusBadge";
 import { useClients } from "@/hooks/useClients";
 import { useInteractions } from "@/hooks/useInteractions";
 import { useProjects } from "@/hooks/useProjects";
@@ -8,31 +9,35 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  LineChart, Line, CartesianGrid,
+  LineChart, Line, CartesianGrid, Area, AreaChart,
 } from "recharts";
 
+const today = new Date().toISOString().slice(0, 10);
+
 const STATUS_COLORS: Record<string, string> = {
-  "Ativo": "#FFC300",
-  "Lead": "#3B82F6",
-  "Prospect": "#F97316",
-  "Inativo": "#9CA3AF",
-  "Sem compras": "#EF4444",
+  "Ativo": "#34d399", "Lead": "#60a5fa", "Prospect": "#fbbf24",
+  "Inativo": "#64748b", "Sem compras": "#f87171",
 };
 
 const typeIcons: Record<string, typeof Mail> = {
-  "E-mail": Mail,
-  "WhatsApp": Phone,
-  "Reunião": Handshake,
-};
-
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06 } },
+  "E-mail": Mail, "WhatsApp": Phone, "Reunião": Handshake,
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } },
+};
+
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
+
+const tooltipStyle = {
+  backgroundColor: "hsl(222 47% 8%)",
+  border: "1px solid hsl(222 47% 14%)",
+  borderRadius: "10px",
+  fontFamily: "Inter",
+  fontSize: "12px",
+  boxShadow: "0 8px 32px -8px rgba(0,0,0,0.6)",
+  color: "hsl(210 40% 98%)",
 };
 
 export default function Dashboard() {
@@ -40,6 +45,7 @@ export default function Dashboard() {
   const { clients } = useClients();
   const { interactions } = useInteractions();
   const { projects } = useProjects();
+
   const ativos = clients.filter(c => c.status === "Ativo");
   const leads = clients.filter(c => c.status === "Lead");
   const prospects = clients.filter(c => c.status === "Prospect");
@@ -56,7 +62,7 @@ export default function Dashboard() {
 
   const tipoCount: Record<string, number> = {};
   clients.forEach(c => { tipoCount[c.tipoEmpresa] = (tipoCount[c.tipoEmpresa] || 0) + 1; });
-  const barData = Object.entries(tipoCount).map(([name, value]) => ({ name, value }));
+  const barData = Object.entries(tipoCount).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
 
   const monthCount: Record<string, number> = {};
   interactions.forEach(i => {
@@ -65,202 +71,195 @@ export default function Dashboard() {
   });
   const lineData = Object.entries(monthCount).sort(([a], [b]) => a.localeCompare(b)).map(([month, count]) => ({
     month: month.replace(/^(\d{4})-(\d{2})$/, "$2/$1"),
-    interações: count,
+    value: count,
   }));
 
-  const recentInteractions = [...interactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+  const recentInteractions = [...interactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
   const upcomingActions = interactions
     .filter(i => i.proximaAcao)
     .sort((a, b) => (a.dataPrevista || "9999").localeCompare(b.dataPrevista || "9999"))
-    .slice(0, 8);
-
-  const today = new Date().toISOString().slice(0, 10);
-
-  const tooltipStyle = {
-    backgroundColor: "hsla(0,0%,6%,0.85)",
-    backdropFilter: "blur(40px)",
-    border: "1px solid hsla(0,0%,100%,0.08)",
-    borderRadius: "16px",
-    fontFamily: "Inter",
-    boxShadow: "0 8px 32px hsla(0,0%,0%,0.4)",
-  };
+    .slice(0, 6);
 
   return (
-    <motion.div className="p-6 space-y-6" variants={stagger} initial="hidden" animate="show">
-      <motion.div variants={fadeUp} className="flex items-start justify-between flex-wrap gap-4">
+    <motion.div className="p-6 space-y-6 max-w-[1600px]" variants={stagger} initial="hidden" animate="show">
+
+      {/* Page header */}
+      <motion.div variants={fadeUp} className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">
-            CRM Junior Pinheiro <span className="text-primary">|</span> Dashboard Gerencial
-          </h1>
-          <p className="text-xs font-display uppercase tracking-widest text-muted-foreground mt-1">
-            Setor: Linha Autopeças — Linha Médio Pesado
+          <h1 className="text-xl font-bold text-foreground font-display">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
           </p>
         </div>
-        <motion.div className="flex gap-2 flex-wrap" variants={fadeUp}>
+        <div className="flex gap-2 flex-wrap">
           {[
             { label: "Novo Cliente", path: "/clientes" },
             { label: "Nova Interação", path: "/historico" },
             { label: "Nova Venda", path: "/vendas" },
-            { label: "Novo Projeto", path: "/projetos" },
           ].map(btn => (
-            <Button key={btn.label} size="sm" onClick={() => navigate(btn.path)} className="text-xs font-display rounded-xl">
-              <Plus className="h-3 w-3 mr-1" /> {btn.label}
+            <Button key={btn.label} size="sm" variant="outline"
+              onClick={() => navigate(btn.path)}
+              className="text-xs border-border/60 bg-white/[0.03] hover:bg-white/[0.06] gap-1.5">
+              <Plus className="h-3 w-3" /> {btn.label}
             </Button>
           ))}
-        </motion.div>
+        </div>
       </motion.div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <KpiCard title="Total Clientes" value={clients.length} icon={Users} index={0} />
-        <KpiCard title="Ativos" value={ativos.length} icon={UserCheck} subtitle={ativos.map(c => c.empresa).join(", ")} index={1} />
-        <KpiCard title="Leads" value={leads.length} icon={UserPlus} index={2} />
-        <KpiCard title="Prospects" value={prospects.length} icon={Eye} index={3} />
-        <KpiCard title="Sem Compras" value={semCompras.length} icon={AlertTriangle} index={4} />
-        <KpiCard title="Projetos Ativos" value={projetosAtivos} icon={Lightbulb} index={5} />
-      </div>
+      {/* KPIs */}
+      <motion.div variants={fadeUp} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <KpiCard title="Total" value={clients.length} icon={Users} index={0} />
+        <KpiCard title="Ativos" value={ativos.length} icon={UserCheck} index={1} color="success" />
+        <KpiCard title="Leads" value={leads.length} icon={UserPlus} index={2} color="info" />
+        <KpiCard title="Prospects" value={prospects.length} icon={Eye} index={3} color="primary" />
+        <KpiCard title="Sem Compras" value={semCompras.length} icon={AlertTriangle} index={4} color="danger" />
+        <KpiCard title="Projetos" value={projetosAtivos} icon={Lightbulb} index={5} color="primary" />
+      </motion.div>
 
-      {/* Charts */}
+      {/* Charts row */}
       <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {[
-          {
-            title: "Clientes por Status",
-            content: (
-              <>
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={75} strokeWidth={0}>
-                      {pieData.map((entry) => <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || "#666"} />)}
-                    </Pie>
-                    <Tooltip contentStyle={tooltipStyle} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {pieData.map(d => (
-                    <div key={d.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS[d.name] }} />
-                      {d.name}: {d.value}
-                    </div>
-                  ))}
+
+        {/* Interações por mês */}
+        <div className="lg:col-span-2 card-surface rounded-xl p-5">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground font-display">Interações por Mês</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Histórico de contatos realizados</p>
+            </div>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <ResponsiveContainer width="100%" height={180}>
+            <AreaChart data={lineData}>
+              <defs>
+                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(38 92% 55%)" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="hsl(38 92% 55%)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(222 47% 12%)" vertical={false} />
+              <XAxis dataKey="month" tick={{ fill: "hsl(215 20% 40%)", fontSize: 10, fontFamily: "Inter" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "hsl(215 20% 40%)", fontSize: 10, fontFamily: "Inter" }} axisLine={false} tickLine={false} width={25} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Area type="monotone" dataKey="value" name="Interações" stroke="hsl(38 92% 55%)" strokeWidth={2} fill="url(#colorValue)" dot={false} activeDot={{ r: 4, fill: "hsl(38 92% 55%)", stroke: "hsl(222 47% 7%)", strokeWidth: 2 }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Status pizza */}
+        <div className="card-surface rounded-xl p-5">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground font-display">Clientes por Status</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">{clients.length} clientes total</p>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={130}>
+            <PieChart>
+              <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={35} outerRadius={58} strokeWidth={0} paddingAngle={3}>
+                {pieData.map((entry) => <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || "#64748b"} />)}
+              </Pie>
+              <Tooltip contentStyle={tooltipStyle} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="mt-3 space-y-1.5">
+            {pieData.map(d => (
+              <div key={d.name} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS[d.name] }} />
+                  <span className="text-muted-foreground">{d.name}</span>
                 </div>
-              </>
-            ),
-          },
-          {
-            title: "Tipo de Empresa",
-            content: (
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={barData} layout="vertical">
-                  <XAxis type="number" tick={{ fill: "#999", fontSize: 11, fontFamily: "Inter" }} />
-                  <YAxis type="category" dataKey="name" width={100} tick={{ fill: "#999", fontSize: 10, fontFamily: "Inter" }} />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Bar dataKey="value" fill="hsl(48 100% 50%)" radius={[0, 6, 6, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ),
-          },
-          {
-            title: "Interações por Mês",
-            content: (
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={lineData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsla(0,0%,100%,0.04)" />
-                  <XAxis dataKey="month" tick={{ fill: "#999", fontSize: 9, fontFamily: "Inter" }} />
-                  <YAxis tick={{ fill: "#999", fontSize: 11, fontFamily: "Inter" }} />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Line type="monotone" dataKey="interações" stroke="hsl(48 100% 50%)" strokeWidth={2} dot={{ fill: "hsl(48 100% 50%)", r: 3 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            ),
-          },
-        ].map((chart, idx) => (
-          <motion.div
-            key={chart.title}
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 + idx * 0.1, ease: "easeOut" }}
-            whileHover={{ y: -2, transition: { duration: 0.2 } }}
-            className="glass glass-shimmer rounded-2xl p-5"
-          >
-            <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-              {chart.title}
-            </h3>
-            {chart.content}
-          </motion.div>
-        ))}
+                <span className="font-semibold font-mono text-foreground">{d.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </motion.div>
 
-      {/* Activity & Actions */}
-      <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
-          className="glass rounded-2xl p-5"
-        >
-          <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-            Atividade Recente
-          </h3>
+      {/* Bottom row */}
+      <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+        {/* Tipo de empresa */}
+        <div className="card-surface rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-foreground font-display mb-5">Tipo de Empresa</h3>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={barData} layout="vertical" barSize={8}>
+              <XAxis type="number" tick={{ fill: "hsl(215 20% 40%)", fontSize: 10, fontFamily: "Inter" }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" width={90} tick={{ fill: "hsl(215 20% 50%)", fontSize: 10, fontFamily: "Inter" }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Bar dataKey="value" name="Clientes" fill="hsl(38 92% 55%)" radius={[0, 4, 4, 0]} background={{ fill: "hsl(222 47% 10%)", radius: 4 }} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Atividade recente */}
+        <div className="card-surface rounded-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-foreground font-display">Atividade Recente</h3>
+            <button onClick={() => navigate("/historico")} className="text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+              Ver tudo <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
           <div className="space-y-2">
             {recentInteractions.map((i, idx) => {
               const Icon = typeIcons[i.type] || Mail;
               return (
-                <motion.div
-                  key={i.id}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: 0.7 + idx * 0.04 }}
-                  className="flex items-start gap-3 text-sm p-2.5 rounded-xl glass-interactive cursor-default"
+                <motion.div key={i.id}
+                  initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + idx * 0.04 }}
+                  className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-white/[0.03] transition-colors group cursor-default"
                 >
-                  <div className="p-1.5 rounded-lg glass-subtle">
-                    <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                  <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-border/50 flex items-center justify-center shrink-0 mt-0.5">
+                    <Icon className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-display text-xs text-muted-foreground">{formatDate(i.date)}</span>
-                      <span className="font-medium text-foreground text-sm">{i.empresa}</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-medium text-foreground truncate">{i.empresa}</span>
+                      <span className="text-[10px] text-muted-foreground font-mono">{formatDate(i.date)}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground truncate">{i.summary}</p>
+                    <p className="text-[11px] text-muted-foreground truncate mt-0.5">{i.summary}</p>
                   </div>
                 </motion.div>
               );
             })}
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
-          className="glass rounded-2xl p-5"
-        >
-          <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-            Próximas Ações
-          </h3>
+        {/* Próximas ações */}
+        <div className="card-surface rounded-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-foreground font-display">Próximas Ações</h3>
+            <button onClick={() => navigate("/historico")} className="text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+              Ver tudo <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
           <div className="space-y-2">
             {upcomingActions.map((i, idx) => {
               const isOverdue = i.dataPrevista && i.dataPrevista <= today;
               return (
-                <motion.div
-                  key={i.id}
-                  initial={{ opacity: 0, x: 8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: 0.7 + idx * 0.04 }}
-                  className={`text-sm p-2.5 rounded-xl transition-colors ${isOverdue ? "border-l-2 border-l-destructive action-pulse glass-subtle bg-destructive/5" : "glass-interactive border-l-2 border-l-transparent"}`}
+                <motion.div key={i.id}
+                  initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + idx * 0.04 }}
+                  className={`flex items-start gap-3 p-2.5 rounded-lg transition-colors cursor-default ${isOverdue ? "bg-red-400/5 border border-red-400/10 action-pulse" : "hover:bg-white/[0.03]"}`}
                 >
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-3 w-3 text-muted-foreground" />
-                    <span className="font-display text-xs text-muted-foreground">
-                      {i.dataPrevista ? formatDate(i.dataPrevista) : "Pendente"}
-                    </span>
-                    <span className="font-medium text-foreground text-xs">{i.empresa}</span>
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${isOverdue ? "bg-red-400/10" : "bg-white/[0.04] border border-border/50"}`}>
+                    <Clock className={`h-3 w-3 ${isOverdue ? "text-red-400" : "text-muted-foreground"}`} />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{i.proximaAcao}</p>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-medium text-foreground truncate">{i.empresa}</span>
+                      {i.dataPrevista && (
+                        <span className={`text-[10px] font-mono ${isOverdue ? "text-red-400 font-semibold" : "text-muted-foreground"}`}>
+                          {formatDate(i.dataPrevista)}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground truncate mt-0.5">{i.proximaAcao}</p>
+                  </div>
                 </motion.div>
               );
             })}
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </motion.div>
   );

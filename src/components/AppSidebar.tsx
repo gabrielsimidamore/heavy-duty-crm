@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Megaphone, Settings } from "lucide-react";
+import { LayoutDashboard, Users, History, DollarSign, Lightbulb, Megaphone, Settings, AlertCircle } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -11,20 +11,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useInteractions } from "@/hooks/useInteractions";
 
-const items = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Clientes", url: "/clientes", icon: Users },
-  { title: "Histórico", url: "/historico", icon: History },
-  { title: "Vendas", url: "/vendas", icon: DollarSign },
-  { title: "Projetos", url: "/projetos", icon: Lightbulb },
-  { title: "Conteúdo", url: "/conteudo", icon: Megaphone },
-  { title: "Configurações", url: "/configuracoes", icon: Settings },
-];
+const today = new Date().toISOString().slice(0, 10);
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { interactions } = useInteractions();
+
+  const overdueCount = interactions.filter(
+    i => i.proximaAcao && i.dataPrevista && i.dataPrevista <= today
+  ).length;
+
+  const items = [
+    { title: "Dashboard", url: "/", icon: LayoutDashboard, badge: 0 },
+    { title: "Clientes", url: "/clientes", icon: Users, badge: 0 },
+    { title: "Histórico", url: "/historico", icon: History, badge: overdueCount },
+    { title: "Vendas", url: "/vendas", icon: DollarSign, badge: 0 },
+    { title: "Projetos", url: "/projetos", icon: Lightbulb, badge: 0 },
+    { title: "Conteúdo", url: "/conteudo", icon: Megaphone, badge: 0 },
+    { title: "Configurações", url: "/configuracoes", icon: Settings, badge: 0 },
+  ];
 
   return (
     <Sidebar collapsible="icon" className="glass-sidebar border-r-0">
@@ -54,7 +62,14 @@ export function AppSidebar() {
                       className="hover:bg-foreground/5 rounded-xl transition-all duration-200"
                       activeClassName="glass-subtle text-primary font-medium"
                     >
-                      <item.icon className="mr-2 h-4 w-4" />
+                      <div className="relative mr-2">
+                        <item.icon className="h-4 w-4" />
+                        {item.badge > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-destructive text-white text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center leading-none">
+                            {item.badge > 9 ? "9+" : item.badge}
+                          </span>
+                        )}
+                      </div>
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>

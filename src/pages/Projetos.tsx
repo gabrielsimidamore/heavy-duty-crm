@@ -48,7 +48,7 @@ export default function Projetos() {
     !search || p.nome.toLowerCase().includes(search.toLowerCase()) || (p.clientName && p.clientName.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const today = "2026-03-12";
+  const today = new Date().toISOString().slice(0, 10);
 
   const handleDragEnd = useCallback((result: DropResult) => {
     if (!result.destination) return;

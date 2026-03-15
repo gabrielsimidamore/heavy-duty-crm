@@ -50,7 +50,7 @@ export default function Historico() {
 
   return (
     <motion.div
-      className="p-6 space-y-4"
+      className="p-6 space-y-5 max-w-[1400px]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
@@ -60,16 +60,16 @@ export default function Historico() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between flex-wrap gap-3"
       >
-        <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Histórico de Interações</h1>
+        <h1 className="text-xl font-bold text-foreground font-display">Histórico de Interações</h1>
         <Dialog open={showNewInteraction} onOpenChange={setShowNewInteraction}>
           <DialogTrigger asChild>
-            <Button size="sm" className="text-xs font-display rounded-xl">
+            <Button size="sm" className="text-xs gap-1.5 rounded-lg">
               <Plus className="h-3 w-3 mr-1" /> Nova Interação
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[85vh] overflow-auto glass-elevated rounded-2xl border-0">
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-auto card-elevated rounded-xl border-border/60">
             <DialogHeader>
-              <DialogTitle className="font-display text-lg">Nova Interação</DialogTitle>
+              <DialogTitle className="text-base font-semibold font-display">Nova Interação</DialogTitle>
             </DialogHeader>
             <NewInteractionForm
               onClose={() => setShowNewInteraction(false)}
@@ -83,13 +83,13 @@ export default function Historico() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="flex flex-wrap gap-3 items-center glass-subtle rounded-2xl p-3"
+        className="flex flex-wrap gap-3 items-center card-surface rounded-xl p-3"
       >
         <Select value={clientFilter} onValueChange={setClientFilter}>
-          <SelectTrigger className="w-[240px] bg-transparent border-border/50 text-sm rounded-xl">
+          <SelectTrigger className="w-[240px] bg-white/[0.03] border-border/60 text-sm rounded-lg text-xs">
             <SelectValue placeholder="Filtrar por cliente" />
           </SelectTrigger>
-          <SelectContent className="glass-elevated border-0 rounded-2xl">
+          <SelectContent className="card-elevated border-border/60 rounded-xl">
             <SelectItem value="all">Todos os Clientes</SelectItem>
             {uniqueClients.map(c => (
               <SelectItem key={c.id} value={c.id.toString()}>{c.contato} — {c.empresa}</SelectItem>
@@ -97,10 +97,10 @@ export default function Historico() {
           </SelectContent>
         </Select>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[160px] bg-transparent border-border/50 text-sm rounded-xl">
+          <SelectTrigger className="w-[160px] bg-white/[0.03] border-border/60 text-sm rounded-lg text-xs">
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
-          <SelectContent className="glass-elevated border-0 rounded-2xl">
+          <SelectContent className="card-elevated border-border/60 rounded-xl">
             <SelectItem value="all">Todos os Tipos</SelectItem>
             {Object.keys(typeConfig).map(t => (
               <SelectItem key={t} value={t}>{t}</SelectItem>
@@ -152,7 +152,7 @@ export default function Historico() {
                     <Icon className={`h-3 w-3 ${cfg.color}`} />
                   </div>
                   <div
-                    className={`glass glass-shimmer rounded-2xl p-4 cursor-pointer transition-all duration-300 ${
+                    className={`card-surface card-hover rounded-xl p-4 cursor-pointer transition-all duration-300 ${
                       isOverdue ? "border-l-2 border-l-destructive action-pulse" : "border-l-2 border-l-primary/20"
                     }`}
                     onClick={() => setExpandedId(isExpanded ? null : i.id)}
@@ -259,7 +259,7 @@ function NewInteractionForm({ onClose, addInteraction }: {
         <Label className="text-xs">Cliente *</Label>
         <Select value={form.clientId} onValueChange={v => set("clientId", v)}>
           <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
-          <SelectContent className="glass-elevated border-0 rounded-2xl">
+          <SelectContent className="card-elevated border-border/60 rounded-xl">
             {uniqueClients.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.contato} — {c.empresa}</SelectItem>)}
           </SelectContent>
         </Select>
@@ -273,7 +273,7 @@ function NewInteractionForm({ onClose, addInteraction }: {
           <Label className="text-xs">Tipo *</Label>
           <Select value={form.type} onValueChange={v => set("type", v)}>
             <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent className="glass-elevated border-0 rounded-2xl">
+            <SelectContent className="card-elevated border-border/60 rounded-xl">
               {Object.keys(typeConfig).map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
             </SelectContent>
           </Select>

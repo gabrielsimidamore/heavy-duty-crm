@@ -117,13 +117,24 @@ export default function Vendas() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass rounded-2xl overflow-auto"
+        className="glass rounded-2xl overflow-hidden"
       >
-        <table className="w-full text-sm">
+        <table className="w-full text-xs" style={{ tableLayout: "fixed" }}>
+          <colgroup>
+            <col style={{ width: "4%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "15%" }} />
+            <col style={{ width: "8%" }} />
+            <col style={{ width: "10%" }} />
+            <col style={{ width: "7%" }} />
+            <col style={{ width: "13%" }} />
+            <col style={{ width: "9%" }} />
+            <col style={{ width: "20%" }} />
+          </colgroup>
           <thead>
             <tr className="border-b border-border/30">
-              {["Nº", "Cliente", "Empresa", "Data", "Pedido", "Produtos", "Total", "Pgto", "Status"].map(h => (
-                <th key={h} className="text-left px-3 py-3 font-display text-[10px] uppercase tracking-widest text-muted-foreground whitespace-nowrap">{h}</th>
+              {["Nº", "Cliente", "Empresa", "Data", "Pedido", "Itens", "Total", "Pgto", "Status"].map(h => (
+                <th key={h} className="text-left px-3 py-3 font-display text-[10px] uppercase tracking-widest text-muted-foreground">{h}</th>
               ))}
             </tr>
           </thead>
@@ -144,16 +155,16 @@ export default function Vendas() {
                   transition={{ duration: 0.3, delay: idx * 0.03 }}
                   className="border-b border-border/20 hover:bg-foreground/[0.03] transition-colors"
                 >
-                  <td className="px-3 py-3 font-display text-muted-foreground">{s.id}</td>
-                  <td className="px-3 py-3 font-medium text-foreground whitespace-nowrap">{s.clientName}</td>
-                  <td className="px-3 py-3 text-muted-foreground whitespace-nowrap">{s.empresa}</td>
-                  <td className="px-3 py-3 text-muted-foreground whitespace-nowrap">{formatDate(s.date)}</td>
-                  <td className="px-3 py-3 font-display text-xs text-muted-foreground">{s.numeroPedido}</td>
-                  <td className="px-3 py-3 text-xs text-muted-foreground">{s.produtos.length} item(s)</td>
-                  <td className="px-3 py-3 font-display font-medium text-foreground whitespace-nowrap">R$ {s.totalValue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                  <td className="px-3 py-3 text-xs text-muted-foreground">{s.formaPagamento}</td>
-                  <td className="px-3 py-3">
-                    <span className={`inline-flex items-center px-2.5 py-1 text-[10px] font-medium font-display uppercase tracking-wider border rounded-full backdrop-blur-sm ${statusStyles[s.status]}`}>
+                  <td className="px-3 py-2.5 text-muted-foreground">{s.id}</td>
+                  <td className="px-3 py-2.5 font-medium text-foreground"><span className="block truncate">{s.clientName}</span></td>
+                  <td className="px-3 py-2.5 text-muted-foreground"><span className="block truncate">{s.empresa}</span></td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{formatDate(s.date)}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground"><span className="block truncate">{s.numeroPedido}</span></td>
+                  <td className="px-3 py-2.5 text-muted-foreground text-center">{s.produtos.length}</td>
+                  <td className="px-3 py-2.5 font-medium text-foreground"><span className="block truncate">R$ {s.totalValue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span></td>
+                  <td className="px-3 py-2.5 text-muted-foreground"><span className="block truncate">{s.formaPagamento}</span></td>
+                  <td className="px-3 py-2.5">
+                    <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-medium font-display uppercase tracking-wider border rounded-full ${statusStyles[s.status]}`}>
                       {s.status}
                     </span>
                   </td>

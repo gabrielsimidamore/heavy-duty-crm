@@ -2,51 +2,51 @@ import { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Input } from "@/components/ui/input";
-import { Search, Bell, Command } from "lucide-react";
+import { Search, Bell, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useClients } from "@/hooks/useClients";
 import { useInteractions } from "@/hooks/useInteractions";
 import { useProjects } from "@/hooks/useProjects";
 import { motion, AnimatePresence } from "framer-motion";
 
+const typeColor: Record<string, string> = {
+  "Cliente":   "bg-blue-50 text-blue-700 border border-blue-200",
+  "Interação": "bg-amber-50 text-amber-700 border border-amber-200",
+  "Projeto":   "bg-green-50 text-green-700 border border-green-200",
+};
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const [globalSearch, setGlobalSearch] = useState("");
-  const [showResults, setShowResults] = useState(false);
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { clients } = useClients();
   const { interactions } = useInteractions();
   const { projects } = useProjects();
 
   const today = new Date().toISOString().slice(0, 10);
-  const overdueCount = interactions.filter(i => i.proximaAcao && i.dataPrevista && i.dataPrevista <= today).length;
+  const overdue = interactions.filter(i => i.proximaAcao && i.dataPrevista && i.dataPrevista <= today).length;
 
-  const typeColors: Record<string, string> = {
-    "Cliente": "text-blue-400 bg-blue-400/10",
-    "Interação": "text-amber-400 bg-amber-400/10",
-    "Projeto": "text-emerald-400 bg-emerald-400/10",
-  };
-
-  const searchResults = globalSearch.length >= 2 ? [
+  const results = search.length >= 2 ? [
     ...clients.filter(c =>
-      c.contato.toLowerCase().includes(globalSearch.toLowerCase()) ||
-      c.empresa.toLowerCase().includes(globalSearch.toLowerCase())
+      c.contato.toLowerCase().includes(search.toLowerCase()) ||
+      c.empresa.toLowerCase().includes(search.toLowerCase())
     ).slice(0, 3).map(c => ({ type: "Cliente", label: c.contato, sub: c.empresa, url: "/clientes" })),
     ...interactions.filter(i =>
-      i.summary.toLowerCase().includes(globalSearch.toLowerCase()) ||
-      i.empresa.toLowerCase().includes(globalSearch.toLowerCase())
-    ).slice(0, 3).map(i => ({ type: "Interação", label: i.empresa, sub: i.summary.slice(0, 50) + "...", url: "/historico" })),
+      i.summary.toLowerCase().includes(search.toLowerCase()) ||
+      i.empresa.toLowerCase().includes(search.toLowerCase())
+    ).slice(0, 2).map(i => ({ type: "Interação", label: i.empresa, sub: i.summary.slice(0, 55) + "...", url: "/historico" })),
     ...projects.filter(p =>
-      p.nome.toLowerCase().includes(globalSearch.toLowerCase())
-    ).slice(0, 2).map(p => ({ type: "Projeto", label: p.nome, sub: p.clientName || "", url: "/projetos" })),
+      p.nome.toLowerCase().includes(search.toLowerCase())
+    ).slice(0, 2).map(p => ({ type: "Projeto", label: p.nome, sub: p.clientName || "—", url: "/projetos" })),
   ] : [];
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); document.getElementById("global-search")?.focus(); }
-      if (e.key === "Escape") { setShowResults(false); setGlobalSearch(""); }
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); setOpen(true); }
+      if (e.key === "Escape") { setOpen(false); setSearch(""); }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, []);
 
   return (
@@ -54,79 +54,97 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Header */}
-          <header className="h-13 flex items-center header-surface px-4 gap-4 z-20 sticky top-0" style={{ height: "52px" }}>
-            <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors w-7 h-7 flex items-center justify-center rounded-md hover:bg-white/[0.04]" />
+          <header className="h-[52px] flex items-center header-bg px-4 gap-3 z-20 sticky top-0">
+            <SidebarTrigger className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-all" />
 
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <div className="relative flex items-center">
-                <Search className="absolute left-3 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-                <Input
-                  id="global-search"
-                  placeholder="Buscar clientes, interações, projetos..."
-                  value={globalSearch}
-                  onChange={e => { setGlobalSearch(e.target.value); setShowResults(true); }}
-                  onFocus={() => setShowResults(true)}
-                  onBlur={() => setTimeout(() => setShowResults(false), 200)}
-                  className="pl-9 pr-16 h-8 text-xs bg-white/[0.04] border-border/60 focus:border-primary/30 focus:bg-white/[0.06] transition-all rounded-lg placeholder:text-muted-foreground/50"
-                />
-                <div className="absolute right-2 flex items-center gap-1 pointer-events-none">
-                  <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] text-muted-foreground/50 bg-white/[0.04] border border-border/40 rounded">
-                    <Command className="h-2 w-2" />K
-                  </kbd>
-                </div>
-              </div>
+            <button
+              onClick={() => setOpen(true)}
+              className="flex items-center gap-2 h-8 px-3 rounded border border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground transition-all text-[13px] flex-1 max-w-xs"
+            >
+              <Search className="h-3.5 w-3.5 shrink-0" />
+              <span className="flex-1 text-left">Buscar...</span>
+              <span className="text-[10px] font-medium border border-border px-1.5 py-0.5 rounded text-muted-foreground/60">⌘K</span>
+            </button>
 
-              <AnimatePresence>
-                {showResults && searchResults.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -4, scale: 0.98 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-full mt-2 left-0 right-0 card-elevated rounded-xl z-50 overflow-hidden py-1 shadow-2xl"
-                  >
-                    {searchResults.map((r, idx) => (
-                      <button key={idx}
-                        className="w-full text-left px-3 py-2.5 hover:bg-white/[0.04] transition-colors flex items-center gap-3"
-                        onMouseDown={() => { navigate(r.url); setGlobalSearch(""); setShowResults(false); }}
-                      >
-                        <span className={`text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded font-display ${typeColors[r.type] || "text-muted-foreground bg-muted"}`}>{r.type}</span>
-                        <div className="min-w-0">
-                          <p className="text-xs font-medium text-foreground truncate">{r.label}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">{r.sub}</p>
-                        </div>
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Right */}
             <div className="ml-auto flex items-center gap-2">
-              {overdueCount > 0 && (
-                <button
+              {overdue > 0 && (
+                <motion.button
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
                   onClick={() => navigate("/historico")}
-                  className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-[11px] font-medium hover:bg-destructive/15 transition-colors"
+                  className="flex items-center gap-1.5 h-7 px-2.5 rounded text-[11px] font-semibold hover:opacity-80 transition-opacity"
+                  style={{ background: "#FFEBE6", color: "#BF2600", border: "1px solid #FFBDAD" }}
                 >
                   <Bell className="h-3 w-3" />
-                  {overdueCount} ação{overdueCount > 1 ? "ões" : ""} atrasada{overdueCount > 1 ? "s" : ""}
-                </button>
+                  {overdue} atrasada{overdue > 1 ? "s" : ""}
+                </motion.button>
               )}
-              <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
-                <span className="text-[10px] font-bold text-primary font-display">JP</span>
+              <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
+                <span className="text-[10px] font-bold text-white">JP</span>
               </div>
             </div>
           </header>
 
-          {/* Page content */}
-          <main className="flex-1 overflow-auto scroll-area">
+          <main className="flex-1 overflow-auto">
             {children}
           </main>
         </div>
       </div>
+
+      {/* Search modal */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/30 z-50"
+              onClick={() => { setOpen(false); setSearch(""); }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98, y: -8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98, y: -8 }}
+              transition={{ duration: 0.15 }}
+              className="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-lg z-50 bg-white rounded-xl overflow-hidden"
+              style={{ boxShadow: "0 24px 48px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.06)" }}
+            >
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
+                <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+                <input
+                  autoFocus
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Buscar clientes, interações, projetos..."
+                  className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-muted-foreground outline-none"
+                />
+                <button onClick={() => { setOpen(false); setSearch(""); }} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              {results.length > 0 ? (
+                <div className="py-1.5 max-h-72 overflow-y-auto">
+                  {results.map((r, idx) => (
+                    <button key={idx}
+                      className="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-accent transition-colors"
+                      onClick={() => { navigate(r.url); setOpen(false); setSearch(""); }}
+                    >
+                      <span className={`text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${typeColor[r.type] || ""}`}>{r.type}</span>
+                      <div className="min-w-0">
+                        <p className="text-[13px] font-medium text-foreground truncate">{r.label}</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{r.sub}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : search.length >= 2 ? (
+                <p className="px-4 py-6 text-[13px] text-muted-foreground text-center">Nenhum resultado encontrado</p>
+              ) : (
+                <p className="px-4 py-6 text-[12px] text-muted-foreground text-center">Digite para buscar...</p>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </SidebarProvider>
   );
 }

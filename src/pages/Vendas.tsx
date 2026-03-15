@@ -50,16 +50,16 @@ export default function Vendas() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between flex-wrap gap-3"
       >
-        <h1 className="text-xl font-bold text-foreground font-display">Vendas / Pedidos / Cotações</h1>
+        <h1 className="text-[20px] font-bold text-foreground">Vendas / Pedidos / Cotações</h1>
         <Dialog open={showNewSale} onOpenChange={setShowNewSale}>
           <DialogTrigger asChild>
-            <Button size="sm" className="text-xs font-display rounded-xl">
+            <Button size="sm" className="text-xs gap-1.5 rounded-md">
               <Plus className="h-3 w-3 mr-1" /> Nova Venda / Cotação
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[85vh] overflow-auto card-elevated border-border/60 rounded-xl">
+          <DialogContent className="max-w-3xl max-h-[85vh] overflow-auto glass-elevated rounded-lg">
             <DialogHeader>
-              <DialogTitle className="font-display text-lg">Nova Venda / Cotação</DialogTitle>
+              <DialogTitle className="text-base font-semibold font-display text-foreground">Nova Venda / Cotação</DialogTitle>
             </DialogHeader>
             <NewSaleForm onClose={() => setShowNewSale(false)} />
           </DialogContent>
@@ -80,7 +80,7 @@ export default function Vendas() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: idx * 0.06 }}
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
-            className="card-surface rounded-xl p-3.5"
+            className="surface-card rounded-lg p-3.5"
           >
             <div className="flex items-center gap-2 text-muted-foreground text-xs font-display uppercase tracking-wider">
               <kpi.icon className="h-3.5 w-3.5 text-primary" /> {kpi.label}
@@ -95,17 +95,17 @@ export default function Vendas() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="flex flex-wrap gap-3 items-center card-surface rounded-xl p-3"
+        className="flex flex-wrap gap-3 items-center surface-card rounded-lg p-3"
       >
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar cliente..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 bg-white/[0.03] border-border/60 text-xs rounded-lg" />
+          <Input placeholder="Buscar cliente..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 bg-white/[0.04] border-white/[0.08] text-xs text-foreground/60 rounded-lg" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[200px] bg-white/[0.03] border-border/60 text-xs rounded-lg">
+          <SelectTrigger className="w-[200px] bg-white/[0.04] border-white/[0.08] text-xs text-foreground/60 rounded-lg">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
-          <SelectContent className="card-elevated border-border/60 rounded-xl">
+          <SelectContent className="glass-elevated rounded-lg">
             <SelectItem value="all">Todos</SelectItem>
             {(Object.keys(statusStyles) as SaleStatus[]).map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
@@ -117,7 +117,7 @@ export default function Vendas() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass rounded-2xl overflow-hidden"
+        className="surface-card rounded-lg overflow-hidden"
       >
         <table className="w-full text-xs" style={{ tableLayout: "fixed" }}>
           <colgroup>
@@ -132,7 +132,7 @@ export default function Vendas() {
             <col style={{ width: "20%" }} />
           </colgroup>
           <thead>
-            <tr className="border-b border-border/30">
+            <tr className="border-b border-border">
               {["Nº", "Cliente", "Empresa", "Data", "Pedido", "Itens", "Total", "Pgto", "Status"].map(h => (
                 <th key={h} className="text-left px-3 py-3 font-display text-[10px] uppercase tracking-widest text-muted-foreground">{h}</th>
               ))}
@@ -153,7 +153,7 @@ export default function Vendas() {
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: idx * 0.03 }}
-                  className="border-b border-border/20 hover:bg-foreground/[0.03] transition-colors"
+                  className="border-b border-border hover:bg-accent transition-colors"
                 >
                   <td className="px-3 py-2.5 text-muted-foreground">{s.id}</td>
                   <td className="px-3 py-2.5 font-medium text-foreground"><span className="block truncate">{s.clientName}</span></td>
@@ -190,38 +190,38 @@ function NewSaleForm({ onClose }: { onClose: () => void }) {
 
   return (
     <Tabs defaultValue="pedido" className="w-full">
-      <TabsList className="w-full glass-subtle rounded-xl">
-        <TabsTrigger value="pedido" className="flex-1 text-xs rounded-lg">Dados do Pedido</TabsTrigger>
-        <TabsTrigger value="produtos" className="flex-1 text-xs rounded-lg">Produtos</TabsTrigger>
-        <TabsTrigger value="condicoes" className="flex-1 text-xs rounded-lg">Condições</TabsTrigger>
-        <TabsTrigger value="docs" className="flex-1 text-xs rounded-lg">Documentos</TabsTrigger>
-        <TabsTrigger value="pos" className="flex-1 text-xs rounded-lg">Pós-Venda</TabsTrigger>
+      <TabsList className="w-full bg-accent border border-border rounded-lg">
+        <TabsTrigger value="pedido" className="flex-1 text-xs rounded-md">Dados do Pedido</TabsTrigger>
+        <TabsTrigger value="produtos" className="flex-1 text-xs rounded-md">Produtos</TabsTrigger>
+        <TabsTrigger value="condicoes" className="flex-1 text-xs rounded-md">Condições</TabsTrigger>
+        <TabsTrigger value="docs" className="flex-1 text-xs rounded-md">Documentos</TabsTrigger>
+        <TabsTrigger value="pos" className="flex-1 text-xs rounded-md">Pós-Venda</TabsTrigger>
       </TabsList>
 
       <TabsContent value="pedido" className="space-y-4 mt-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label className="text-xs">Cliente *</Label>
-            <Select><SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="card-elevated border-border/60 rounded-xl">
+            <Label className="text-[11px] font-mono text-muted-foreground">Cliente *</Label>
+            <Select><SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="glass-elevated rounded-lg">
                 {uniqueClients.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.contato} — {c.empresa}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
-          <div><Label className="text-xs">Data *</Label><Input type="date" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" defaultValue="2026-03-10" /></div>
-          <div><Label className="text-xs">Nº Pedido</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" placeholder="Auto ou manual" /></div>
+          <div><Label className="text-[11px] font-mono text-muted-foreground">Data *</Label><Input type="date" className="bg-background border-border mt-1 rounded-md" defaultValue="2026-03-10" /></div>
+          <div><Label className="text-[11px] font-mono text-muted-foreground">Nº Pedido</Label><Input className="bg-background border-border mt-1 rounded-md" placeholder="Auto ou manual" /></div>
           <div>
-            <Label className="text-xs">Tipo *</Label>
-            <Select><SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="card-elevated border-border/60 rounded-xl">
+            <Label className="text-[11px] font-mono text-muted-foreground">Tipo *</Label>
+            <Select><SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="glass-elevated rounded-lg">
                 {["Cotação", "Pedido", "Venda direta", "Devolução"].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div className="col-span-2">
-            <Label className="text-xs">Status *</Label>
-            <Select><SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="card-elevated border-border/60 rounded-xl">
+            <Label className="text-[11px] font-mono text-muted-foreground">Status *</Label>
+            <Select><SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="glass-elevated rounded-lg">
                 {["Cotação enviada", "Em negociação", "Pedido confirmado", "Faturado", "Entregue", "Cancelado", "Perda"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
             </Select>
@@ -245,9 +245,9 @@ function NewSaleForm({ onClose }: { onClose: () => void }) {
         <Button variant="outline" size="sm" onClick={addProduct} className="text-xs rounded-xl border-border/30">
           <Plus className="h-3 w-3 mr-1" /> Adicionar Produto
         </Button>
-        <div className="bg-white/[0.03] border border-border/40 rounded-lg p-3 text-right">
+        <div className="bg-accent border border-border rounded-lg p-3 text-right">
           <span className="text-xs text-muted-foreground font-display uppercase tracking-wider">Total: </span>
-          <span className="font-display text-lg font-bold text-primary">R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+          <span className="text-base font-semibold font-display text-foreground font-bold text-primary">R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
         </div>
       </TabsContent>
 
@@ -258,18 +258,18 @@ function NewSaleForm({ onClose }: { onClose: () => void }) {
             { label: "Prazo", options: ["À vista", "7d", "14d", "21d", "28d", "30d", "45d", "60d"] },
           ].map(sel => (
             <div key={sel.label}>
-              <Label className="text-xs">{sel.label}</Label>
-              <Select><SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                <SelectContent className="card-elevated border-border/60 rounded-xl">
+              <Label className="text-[11px] font-mono text-muted-foreground">{sel.label}</Label>
+              <Select><SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent className="glass-elevated rounded-lg">
                   {sel.options.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
           ))}
-          <div><Label className="text-xs">Desconto Total (%)</Label><Input type="number" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-          <div><Label className="text-xs">Vendedor</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" defaultValue="Junior Pinheiro" /></div>
+          <div><Label className="text-[11px] font-mono text-muted-foreground">Desconto Total (%)</Label><Input type="number" className="bg-background border-border mt-1 rounded-md" /></div>
+          <div><Label className="text-[11px] font-mono text-muted-foreground">Vendedor</Label><Input className="bg-background border-border mt-1 rounded-md" defaultValue="Junior Pinheiro" /></div>
         </div>
-        <div><Label className="text-xs">Observações de Negociação</Label><Textarea className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+        <div><Label className="text-[11px] font-mono text-muted-foreground">Observações de Negociação</Label><Textarea className="bg-background border-border mt-1 rounded-md" /></div>
       </TabsContent>
 
       <TabsContent value="docs" className="space-y-4 mt-4">
@@ -282,25 +282,25 @@ function NewSaleForm({ onClose }: { onClose: () => void }) {
 
       <TabsContent value="pos" className="space-y-4 mt-4">
         <div className="grid grid-cols-2 gap-3">
-          <div><Label className="text-xs">Data Entrega Prevista</Label><Input type="date" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-          <div><Label className="text-xs">Data Entrega Realizada</Label><Input type="date" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+          <div><Label className="text-[11px] font-mono text-muted-foreground">Data Entrega Prevista</Label><Input type="date" className="bg-background border-border mt-1 rounded-md" /></div>
+          <div><Label className="text-[11px] font-mono text-muted-foreground">Data Entrega Realizada</Label><Input type="date" className="bg-background border-border mt-1 rounded-md" /></div>
           <div>
-            <Label className="text-xs">Status de Entrega</Label>
-            <Select><SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="card-elevated border-border/60 rounded-xl">
+            <Label className="text-[11px] font-mono text-muted-foreground">Status de Entrega</Label>
+            <Select><SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="glass-elevated rounded-lg">
                 {["Aguardando", "Em separação", "Despachado", "Entregue", "Problema"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
-          <div><Label className="text-xs">Concorrente que Ganhou</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+          <div><Label className="text-[11px] font-mono text-muted-foreground">Concorrente que Ganhou</Label><Input className="bg-background border-border mt-1 rounded-md" /></div>
         </div>
-        <div><Label className="text-xs">Motivo da Perda</Label><Textarea className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-        <div><Label className="text-xs">Observações Finais</Label><Textarea className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+        <div><Label className="text-[11px] font-mono text-muted-foreground">Motivo da Perda</Label><Textarea className="bg-background border-border mt-1 rounded-md" /></div>
+        <div><Label className="text-[11px] font-mono text-muted-foreground">Observações Finais</Label><Textarea className="bg-background border-border mt-1 rounded-md" /></div>
       </TabsContent>
 
       <div className="flex gap-2 mt-6">
-        <Button variant="outline" className="flex-1 rounded-xl border-border/30" onClick={onClose}>Cancelar</Button>
-        <Button className="flex-1 font-display rounded-xl" onClick={onClose}>Salvar</Button>
+        <Button variant="outline" className="flex-1 rounded-lg border-white/[0.08] bg-white/[0.03] text-foreground/50 hover:text-foreground" onClick={onClose}>Cancelar</Button>
+        <Button className="flex-1 rounded-md font-semibold" onClick={onClose}>Salvar</Button>
       </div>
     </Tabs>
   );

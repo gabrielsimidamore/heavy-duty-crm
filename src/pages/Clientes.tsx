@@ -102,59 +102,61 @@ export default function Clientes() {
 
       <AnimatePresence mode="wait">
         {viewMode === "table" ? (
-          <motion.div key="table" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="space-y-2">
-            {filtered.length === 0 ? (
-              <div className="glass rounded-2xl text-center py-12 text-muted-foreground">
-                <User className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                <p className="font-display text-sm uppercase tracking-wider">Nenhum cliente encontrado</p>
-              </div>
-            ) : (
-              filtered.map((c, idx) => (
-                <motion.div key={c.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: idx * 0.025 }}
-                  onClick={() => setSelectedClient(c)}
-                  className="glass glass-shimmer rounded-2xl p-4 cursor-pointer hover:bg-foreground/[0.03] transition-all duration-200">
-                  {/* Linha principal */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-full glass-subtle text-primary font-display text-xs flex items-center justify-center font-bold shrink-0">
-                      {c.contato.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground text-sm">{c.contato}</p>
-                      <p className="text-xs text-muted-foreground truncate">{c.empresa}</p>
-                    </div>
-                    <StatusBadge status={c.status} />
-                    <Button variant="ghost" size="sm" className="text-xs h-7 rounded-lg shrink-0" onClick={e => { e.stopPropagation(); setSelectedClient(c); }}>Ver</Button>
-                  </div>
-                  {/* Grade de detalhes */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-2 pt-3 border-t border-border/20">
-                    <div>
-                      <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">Telefone</p>
-                      <p className="text-xs text-foreground mt-0.5">{c.telefone || "—"}</p>
-                    </div>
-                    <div className="col-span-1 sm:col-span-1">
-                      <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">E-mail</p>
-                      <p className="text-xs text-foreground mt-0.5 truncate">{c.email || "—"}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">Tipo</p>
-                      <p className="text-xs text-foreground mt-0.5">{c.tipoEmpresa || "—"}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">Região</p>
-                      <p className="text-xs text-foreground mt-0.5">{c.regiao || "—"}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">Frota</p>
-                      <p className="text-xs text-foreground mt-0.5">{c.frota ?? "—"}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">Score</p>
-                      <p className="text-xs text-foreground mt-0.5">{c.scoreFidelidade || "—"}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))
-            )}
+          <motion.div key="table" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="glass rounded-2xl overflow-hidden w-full">
+            <table className="w-full text-xs" style={{ tableLayout: "fixed" }}>
+              <colgroup>
+                <col style={{ width: "16%" }} />
+                <col style={{ width: "16%" }} />
+                <col style={{ width: "12%" }} />
+                <col style={{ width: "15%" }} />
+                <col style={{ width: "11%" }} />
+                <col style={{ width: "9%" }} />
+                <col style={{ width: "6%" }} />
+                <col style={{ width: "9%" }} />
+                <col style={{ width: "5%" }} />
+                <col style={{ width: "5%" }} />
+              </colgroup>
+              <thead>
+                <tr className="border-b border-border/30">
+                  {["Contato", "Empresa", "Telefone", "E-mail", "Tipo", "Região", "Frota", "Status", "Score", ""].map(h => (
+                    <th key={h} className="text-left px-3 py-3 font-display text-[10px] uppercase tracking-widest text-muted-foreground">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr><td colSpan={10} className="text-center py-12 text-muted-foreground">
+                    <User className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                    <p className="font-display text-sm uppercase tracking-wider">Nenhum cliente encontrado</p>
+                  </td></tr>
+                ) : (
+                  filtered.map((c, idx) => (
+                    <motion.tr key={c.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: idx * 0.025 }}
+                      onClick={() => setSelectedClient(c)} className="border-b border-border/20 hover:bg-foreground/[0.03] cursor-pointer transition-all duration-200">
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-6 h-6 rounded-full glass-subtle text-primary font-display text-[9px] flex items-center justify-center font-bold shrink-0">
+                            {c.contato.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-foreground truncate">{c.contato}</span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2.5 text-muted-foreground"><span className="block truncate">{c.empresa}</span></td>
+                      <td className="px-3 py-2.5 text-muted-foreground"><span className="block truncate">{c.telefone || "—"}</span></td>
+                      <td className="px-3 py-2.5 text-muted-foreground"><span className="block truncate">{c.email || "—"}</span></td>
+                      <td className="px-3 py-2.5 text-muted-foreground"><span className="block truncate">{c.tipoEmpresa || "—"}</span></td>
+                      <td className="px-3 py-2.5 text-muted-foreground"><span className="block truncate">{c.regiao || "—"}</span></td>
+                      <td className="px-3 py-2.5 text-muted-foreground text-center">{c.frota ?? "—"}</td>
+                      <td className="px-3 py-2.5"><StatusBadge status={c.status} /></td>
+                      <td className="px-3 py-2.5 text-muted-foreground text-center">{c.scoreFidelidade || "—"}</td>
+                      <td className="px-3 py-2.5">
+                        <Button variant="ghost" size="sm" className="text-[10px] h-6 px-2 rounded-lg" onClick={e => { e.stopPropagation(); setSelectedClient(c); }}>Ver</Button>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </motion.div>
         ) : (
           <DragDropContext onDragEnd={handleDragEnd}>

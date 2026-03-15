@@ -8,14 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, Handshake, ChevronDown, ChevronUp, MapPin, Plus, Search, Paperclip, MessageSquare } from "lucide-react";
+import { Mail, Phone, Handshake, ChevronDown, ChevronUp, MapPin, Plus, Search, Paperclip, MessageSquare, PhoneCall, Wrench, Linkedin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const typeConfig: Record<InteractionType, { icon: typeof Mail; color: string; label: string }> = {
+const typeConfig: Record<string, { icon: typeof Mail; color: string; label: string }> = {
   "E-mail": { icon: Mail, color: "text-status-lead", label: "E-mail" },
   "WhatsApp": { icon: Phone, color: "text-green-400", label: "WhatsApp" },
   "Reunião": { icon: Handshake, color: "text-primary", label: "Reunião" },
+  "Ligação": { icon: PhoneCall, color: "text-yellow-400", label: "Ligação" },
+  "Visita Técnica": { icon: Wrench, color: "text-orange-400", label: "Visita Técnica" },
+  "LinkedIn": { icon: Linkedin, color: "text-blue-400", label: "LinkedIn" },
+  "Outro": { icon: MessageSquare, color: "text-muted-foreground", label: "Outro" },
 };
+
+const defaultTypeConfig = { icon: MessageSquare, color: "text-muted-foreground", label: "Outro" };
 
 export default function Historico() {
   const { interactions, loading } = useInteractions();
@@ -116,7 +122,7 @@ export default function Historico() {
             </div>
           ) : (
             sorted.map((i, idx) => {
-              const cfg = typeConfig[i.type];
+              const cfg = typeConfig[i.type] ?? defaultTypeConfig;
               const Icon = cfg.icon;
               const isExpanded = expandedId === i.id;
               const isOverdue = i.dataPrevista && i.dataPrevista <= today;

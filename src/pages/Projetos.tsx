@@ -86,16 +86,16 @@ export default function Projetos() {
   return (
     <motion.div className="p-6 space-y-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-xl font-bold text-foreground font-display">Projetos & Ideias</h1>
+        <h1 className="text-[20px] font-bold text-foreground">Projetos & Ideias</h1>
         <div className="flex gap-2">
           <Button variant={viewMode === "kanban" ? "default" : "outline"} size="icon" className="h-8 w-8 rounded-xl" onClick={() => setViewMode("kanban")}><LayoutGrid className="h-4 w-4" /></Button>
           <Button variant={viewMode === "list" ? "default" : "outline"} size="icon" className="h-8 w-8 rounded-xl" onClick={() => setViewMode("list")}><List className="h-4 w-4" /></Button>
           <Dialog open={showNewProject} onOpenChange={setShowNewProject}>
             <DialogTrigger asChild>
-              <Button size="sm" className="text-xs font-display rounded-xl"><Plus className="h-3 w-3 mr-1" /> Novo Projeto</Button>
+              <Button size="sm" className="text-xs gap-1.5 rounded-md"><Plus className="h-3 w-3 mr-1" /> Novo Projeto</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[85vh] overflow-auto glass-elevated rounded-2xl border-0">
-              <DialogHeader><DialogTitle className="font-display text-lg">Novo Projeto</DialogTitle></DialogHeader>
+            <DialogContent className="max-w-2xl max-h-[85vh] overflow-auto glass-elevated rounded-lg">
+              <DialogHeader><DialogTitle className="text-base font-semibold font-display text-foreground">Novo Projeto</DialogTitle></DialogHeader>
               <NewProjectForm onClose={() => setShowNewProject(false)} />
             </DialogContent>
           </Dialog>
@@ -137,7 +137,7 @@ export default function Projetos() {
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                                 onClick={() => setSelectedProject(p)}
-                                className={`card-surface card-hover rounded-xl p-3.5 cursor-grab active:cursor-grabbing transition-all ${snapshot.isDragging ? "ring-2 ring-primary/40 shadow-xl shadow-primary/10 scale-105" : ""}`}
+                                className={`surface-card rounded-lg surface-interactive p-3.5 cursor-grab active:cursor-grabbing transition-all ${snapshot.isDragging ? "ring-2 ring-primary/40 shadow-xl shadow-primary/10 scale-105" : ""}`}
                               >
                                 <p className="font-medium text-foreground text-sm mb-2">{p.nome}</p>
                                 {p.clientName && (
@@ -175,10 +175,10 @@ export default function Projetos() {
             </motion.div>
           </DragDropContext>
         ) : (
-          <motion.div key="list" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="card-surface rounded-xl overflow-auto">
+          <motion.div key="list" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="surface-card rounded-lg overflow-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border/30">
+                <tr className="border-b border-border">
                   {["Projeto", "Cliente", "Tipo", "Prioridade", "Status", "Progresso", "Prazo"].map(h => (
                     <th key={h} className="text-left px-3 py-3 font-display text-[10px] uppercase tracking-widest text-muted-foreground">{h}</th>
                   ))}
@@ -187,7 +187,7 @@ export default function Projetos() {
               <tbody>
                 {filtered.map((p, idx) => (
                   <motion.tr key={p.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: idx * 0.03 }}
-                    onClick={() => setSelectedProject(p)} className="border-b border-border/20 hover:bg-foreground/[0.03] cursor-pointer transition-colors">
+                    onClick={() => setSelectedProject(p)} className="border-b border-border hover:bg-accent cursor-pointer transition-colors">
                     <td className="px-3 py-3 font-medium text-foreground">{p.nome}</td>
                     <td className="px-3 py-3 text-muted-foreground text-xs">{p.clientName || "—"}</td>
                     <td className="px-3 py-3 text-muted-foreground text-xs">{p.tipo}</td>
@@ -210,7 +210,7 @@ export default function Projetos() {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35, ease: "easeOut" }}>
               <SheetHeader>
                 <div className="flex items-center justify-between">
-                  <SheetTitle className="font-display text-lg text-foreground">{selectedProject.nome}</SheetTitle>
+                  <SheetTitle className="text-base font-semibold font-display text-foreground text-foreground">{selectedProject.nome}</SheetTitle>
                   <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => setEditingProject({ ...selectedProject })}>
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -223,7 +223,7 @@ export default function Projetos() {
                   <span className="text-xs text-muted-foreground">{selectedProject.tipo}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">{selectedProject.descricao}</p>
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white/[0.03] border border-border/40 rounded-lg p-3.5">
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-accent border border-border rounded-lg p-3.5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">Progresso</span>
                     <span className="font-display text-sm font-bold text-primary">{selectedProject.progresso}%</span>
@@ -259,7 +259,7 @@ export default function Projetos() {
                   </p>
                 </div>
 
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white/[0.03] border border-border/40 rounded-lg p-3.5">
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-accent border border-border rounded-lg p-3.5">
                   <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Notas</p>
                   <p className="text-sm text-foreground">{selectedProject.notas}</p>
                 </motion.div>
@@ -278,7 +278,7 @@ export default function Projetos() {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35 }}>
               <SheetHeader>
                 <div className="flex items-center justify-between">
-                  <SheetTitle className="font-display text-lg text-foreground">Editar Projeto</SheetTitle>
+                  <SheetTitle className="text-base font-semibold font-display text-foreground text-foreground">Editar Projeto</SheetTitle>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => setEditingProject(null)}><X className="h-4 w-4" /></Button>
                     <Button size="icon" className="h-8 w-8 rounded-xl" onClick={() => handleSaveProject(editingProject)}><Save className="h-4 w-4" /></Button>
@@ -286,38 +286,38 @@ export default function Projetos() {
                 </div>
               </SheetHeader>
               <div className="mt-4 space-y-3">
-                <div><Label className="text-xs">Nome</Label><Input value={editingProject.nome} onChange={e => setEditingProject({ ...editingProject, nome: e.target.value })} className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-                <div><Label className="text-xs">Descrição</Label><Textarea value={editingProject.descricao} onChange={e => setEditingProject({ ...editingProject, descricao: e.target.value })} className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+                <div><Label className="text-[11px] font-mono text-muted-foreground">Nome</Label><Input value={editingProject.nome} onChange={e => setEditingProject({ ...editingProject, nome: e.target.value })} className="bg-background border-border mt-1 rounded-md" /></div>
+                <div><Label className="text-[11px] font-mono text-muted-foreground">Descrição</Label><Textarea value={editingProject.descricao} onChange={e => setEditingProject({ ...editingProject, descricao: e.target.value })} className="bg-background border-border mt-1 rounded-md" /></div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">Prioridade</Label>
+                    <Label className="text-[11px] font-mono text-muted-foreground">Prioridade</Label>
                     <Select value={editingProject.prioridade} onValueChange={v => setEditingProject({ ...editingProject, prioridade: v as ProjectPriority })}>
-                      <SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue /></SelectTrigger>
-                      <SelectContent className="card-elevated border-border/60 rounded-xl">
+                      <SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue /></SelectTrigger>
+                      <SelectContent className="glass-elevated rounded-lg">
                         {(["Alta", "Média", "Baixa"] as ProjectPriority[]).map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs">Status</Label>
+                    <Label className="text-[11px] font-mono text-muted-foreground">Status</Label>
                     <Select value={editingProject.status} onValueChange={v => setEditingProject({ ...editingProject, status: v as ProjectStatus })}>
-                      <SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue /></SelectTrigger>
-                      <SelectContent className="card-elevated border-border/60 rounded-xl">
+                      <SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue /></SelectTrigger>
+                      <SelectContent className="glass-elevated rounded-lg">
                         {statusColumns.map(s => <SelectItem key={s.status} value={s.status}>{s.emoji} {s.status}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div><Label className="text-xs">Data Início</Label><Input type="date" value={editingProject.dataInicio || ""} onChange={e => setEditingProject({ ...editingProject, dataInicio: e.target.value })} className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-                  <div><Label className="text-xs">Prazo</Label><Input type="date" value={editingProject.prazo || ""} onChange={e => setEditingProject({ ...editingProject, prazo: e.target.value })} className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+                  <div><Label className="text-[11px] font-mono text-muted-foreground">Data Início</Label><Input type="date" value={editingProject.dataInicio || ""} onChange={e => setEditingProject({ ...editingProject, dataInicio: e.target.value })} className="bg-background border-border mt-1 rounded-md" /></div>
+                  <div><Label className="text-[11px] font-mono text-muted-foreground">Prazo</Label><Input type="date" value={editingProject.prazo || ""} onChange={e => setEditingProject({ ...editingProject, prazo: e.target.value })} className="bg-background border-border mt-1 rounded-md" /></div>
                 </div>
                 <div>
-                  <Label className="text-xs">Progresso: {editingProject.progresso}%</Label>
+                  <Label className="text-[11px] font-mono text-muted-foreground">Progresso: {editingProject.progresso}%</Label>
                   <Slider value={[editingProject.progresso]} onValueChange={v => setEditingProject({ ...editingProject, progresso: v[0] })} max={100} step={5} className="mt-2" />
                 </div>
-                <div><Label className="text-xs">Responsável</Label><Input value={editingProject.responsavel} onChange={e => setEditingProject({ ...editingProject, responsavel: e.target.value })} className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-                <div><Label className="text-xs">Tipo</Label><Input value={editingProject.tipo} onChange={e => setEditingProject({ ...editingProject, tipo: e.target.value })} className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-                <div><Label className="text-xs">Notas</Label><Textarea value={editingProject.notas} onChange={e => setEditingProject({ ...editingProject, notas: e.target.value })} className="bg-transparent border-border/40 mt-1 min-h-[80px] rounded-xl" /></div>
-                <div><Label className="text-xs">Tags (separar por vírgula)</Label><Input value={editingProject.tags.join(", ")} onChange={e => setEditingProject({ ...editingProject, tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })} className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+                <div><Label className="text-[11px] font-mono text-muted-foreground">Responsável</Label><Input value={editingProject.responsavel} onChange={e => setEditingProject({ ...editingProject, responsavel: e.target.value })} className="bg-background border-border mt-1 rounded-md" /></div>
+                <div><Label className="text-[11px] font-mono text-muted-foreground">Tipo</Label><Input value={editingProject.tipo} onChange={e => setEditingProject({ ...editingProject, tipo: e.target.value })} className="bg-background border-border mt-1 rounded-md" /></div>
+                <div><Label className="text-[11px] font-mono text-muted-foreground">Notas</Label><Textarea value={editingProject.notas} onChange={e => setEditingProject({ ...editingProject, notas: e.target.value })} className="bg-transparent border-border/40 mt-1 min-h-[80px] rounded-xl" /></div>
+                <div><Label className="text-[11px] font-mono text-muted-foreground">Tags (separar por vírgula)</Label><Input value={editingProject.tags.join(", ")} onChange={e => setEditingProject({ ...editingProject, tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })} className="bg-background border-border mt-1 rounded-md" /></div>
 
                 {/* Edit Tasks with Assignees */}
                 <div>
@@ -362,7 +362,7 @@ export default function Projetos() {
                   }}><Plus className="h-3 w-3 mr-1" /> Adicionar Tarefa</Button>
                 </div>
 
-                <Button className="w-full font-display rounded-xl" onClick={() => handleSaveProject(editingProject)}><Save className="h-4 w-4 mr-1" /> Salvar Alterações</Button>
+                <Button className="w-full rounded-md font-semibold" onClick={() => handleSaveProject(editingProject)}><Save className="h-4 w-4 mr-1" /> Salvar Alterações</Button>
               </div>
             </motion.div>
           )}
@@ -379,8 +379,8 @@ function NewProjectForm({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="space-y-4">
-      <div><Label className="text-xs">Nome do Projeto *</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-      <div><Label className="text-xs">Descrição</Label><Textarea className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+      <div><Label className="text-[11px] font-mono text-muted-foreground">Nome do Projeto *</Label><Input className="bg-background border-border mt-1 rounded-md" /></div>
+      <div><Label className="text-[11px] font-mono text-muted-foreground">Descrição</Label><Textarea className="bg-background border-border mt-1 rounded-md" /></div>
       <div className="grid grid-cols-2 gap-3">
         {[
           { label: "Cliente Vinculado", options: uniqueClients.map(c => ({ key: c.id.toString(), label: `${c.contato} — ${c.empresa}` })), placeholder: "Opcional" },
@@ -389,31 +389,31 @@ function NewProjectForm({ onClose }: { onClose: () => void }) {
           { label: "Status *", options: ["Ideia", "Em Análise", "Em Andamento", "Pausado", "Concluído", "Cancelado"].map(s => ({ key: s, label: s })), placeholder: "Selecione" },
         ].map(sel => (
           <div key={sel.label}>
-            <Label className="text-xs">{sel.label}</Label>
-            <Select><SelectTrigger className="bg-white/[0.03] border-border/60 mt-1 rounded-lg"><SelectValue placeholder={sel.placeholder} /></SelectTrigger>
-              <SelectContent className="card-elevated border-border/60 rounded-xl">
+            <Label className="text-[11px] font-mono text-muted-foreground">{sel.label}</Label>
+            <Select><SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue placeholder={sel.placeholder} /></SelectTrigger>
+              <SelectContent className="glass-elevated rounded-lg">
                 {sel.options.map(o => <SelectItem key={o.key} value={o.key}>{o.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
         ))}
-        <div><Label className="text-xs">Data de Início</Label><Input type="date" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
-        <div><Label className="text-xs">Prazo / Data Limite</Label><Input type="date" className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" /></div>
+        <div><Label className="text-[11px] font-mono text-muted-foreground">Data de Início</Label><Input type="date" className="bg-background border-border mt-1 rounded-md" /></div>
+        <div><Label className="text-[11px] font-mono text-muted-foreground">Prazo / Data Limite</Label><Input type="date" className="bg-background border-border mt-1 rounded-md" /></div>
       </div>
       <div>
-        <Label className="text-xs">Progresso: {progresso[0]}%</Label>
+        <Label className="text-[11px] font-mono text-muted-foreground">Progresso: {progresso[0]}%</Label>
         <Slider value={progresso} onValueChange={setProgresso} max={100} step={5} className="mt-2" />
       </div>
-      <div><Label className="text-xs">Responsável</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" defaultValue="Junior Pinheiro" /></div>
-      <div><Label className="text-xs">Tags</Label><Input className="bg-white/[0.03] border-border/60 mt-1 rounded-lg" placeholder="Separe por vírgula" /></div>
-      <div><Label className="text-xs">Notas / Ideias</Label><Textarea className="bg-transparent border-border/40 mt-1 min-h-[80px] rounded-xl" /></div>
+      <div><Label className="text-[11px] font-mono text-muted-foreground">Responsável</Label><Input className="bg-background border-border mt-1 rounded-md" defaultValue="Junior Pinheiro" /></div>
+      <div><Label className="text-[11px] font-mono text-muted-foreground">Tags</Label><Input className="bg-background border-border mt-1 rounded-md" placeholder="Separe por vírgula" /></div>
+      <div><Label className="text-[11px] font-mono text-muted-foreground">Notas / Ideias</Label><Textarea className="bg-transparent border-border/40 mt-1 min-h-[80px] rounded-xl" /></div>
       <div className="border border-dashed border-border/30 rounded-2xl p-6 text-center text-muted-foreground glass-subtle hover:border-primary/20 transition-colors">
         <Paperclip className="h-5 w-5 mx-auto mb-1 opacity-50" />
-        <p className="text-xs">Arraste arquivos ou cole imagens (Ctrl+V)</p>
+        <p className="text-[11px] font-mono text-muted-foreground">Arraste arquivos ou cole imagens (Ctrl+V)</p>
       </div>
       <div className="flex gap-2">
-        <Button variant="outline" className="flex-1 rounded-xl border-border/30" onClick={onClose}>Cancelar</Button>
-        <Button className="flex-1 font-display rounded-xl" onClick={onClose}>Salvar Projeto</Button>
+        <Button variant="outline" className="flex-1 rounded-lg border-white/[0.08] bg-white/[0.03] text-foreground/50 hover:text-foreground" onClick={onClose}>Cancelar</Button>
+        <Button className="flex-1 rounded-md font-semibold" onClick={onClose}>Salvar Projeto</Button>
       </div>
     </div>
   );

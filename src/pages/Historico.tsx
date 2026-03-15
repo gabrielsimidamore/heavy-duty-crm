@@ -60,7 +60,7 @@ export default function Historico() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between flex-wrap gap-3"
       >
-        <h1 className="text-xl font-bold text-foreground font-display">Histórico de Interações</h1>
+        <h1 className="text-[20px] font-bold text-foreground">Histórico de Interações</h1>
         <Dialog open={showNewInteraction} onOpenChange={setShowNewInteraction}>
           <DialogTrigger asChild>
             <Button size="sm" className="text-xs gap-1.5 rounded-lg">
@@ -83,13 +83,13 @@ export default function Historico() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="flex flex-wrap gap-3 items-center card-surface rounded-xl p-3"
+        className="flex flex-wrap gap-3 items-center surface-card rounded-lg p-3"
       >
         <Select value={clientFilter} onValueChange={setClientFilter}>
           <SelectTrigger className="w-[240px] bg-white/[0.03] border-border/60 text-sm rounded-lg text-xs">
             <SelectValue placeholder="Filtrar por cliente" />
           </SelectTrigger>
-          <SelectContent className="card-elevated border-border/60 rounded-xl">
+          <SelectContent className="glass-elevated rounded-lg">
             <SelectItem value="all">Todos os Clientes</SelectItem>
             {uniqueClients.map(c => (
               <SelectItem key={c.id} value={c.id.toString()}>{c.contato} — {c.empresa}</SelectItem>
@@ -100,7 +100,7 @@ export default function Historico() {
           <SelectTrigger className="w-[160px] bg-white/[0.03] border-border/60 text-sm rounded-lg text-xs">
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
-          <SelectContent className="card-elevated border-border/60 rounded-xl">
+          <SelectContent className="glass-elevated rounded-lg">
             <SelectItem value="all">Todos os Tipos</SelectItem>
             {Object.keys(typeConfig).map(t => (
               <SelectItem key={t} value={t}>{t}</SelectItem>
@@ -152,7 +152,7 @@ export default function Historico() {
                     <Icon className={`h-3 w-3 ${cfg.color}`} />
                   </div>
                   <div
-                    className={`card-surface card-hover rounded-xl p-4 cursor-pointer transition-all duration-300 ${
+                    className={`surface-card rounded-lg surface-interactive p-4 cursor-pointer transition-all duration-300 ${
                       isOverdue ? "border-l-2 border-l-destructive action-pulse" : "border-l-2 border-l-primary/20"
                     }`}
                     onClick={() => setExpandedId(isExpanded ? null : i.id)}
@@ -256,49 +256,49 @@ function NewInteractionForm({ onClose, addInteraction }: {
   return (
     <div className="space-y-4">
       <div>
-        <Label className="text-xs">Cliente *</Label>
+        <Label className="text-[11px] font-mono text-muted-foreground">Cliente *</Label>
         <Select value={form.clientId} onValueChange={v => set("clientId", v)}>
-          <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
-          <SelectContent className="card-elevated border-border/60 rounded-xl">
+          <SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue placeholder="Selecione o cliente" /></SelectTrigger>
+          <SelectContent className="glass-elevated rounded-lg">
             {uniqueClients.map(c => <SelectItem key={c.id} value={c.id.toString()}>{c.contato} — {c.empresa}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-xs">Data *</Label>
-          <Input type="date" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.date} onChange={e => set("date", e.target.value)} />
+          <Label className="text-[11px] font-mono text-muted-foreground">Data *</Label>
+          <Input type="date" className="bg-background border-border mt-1 rounded-md" value={form.date} onChange={e => set("date", e.target.value)} />
         </div>
         <div>
-          <Label className="text-xs">Tipo *</Label>
+          <Label className="text-[11px] font-mono text-muted-foreground">Tipo *</Label>
           <Select value={form.type} onValueChange={v => set("type", v)}>
-            <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-            <SelectContent className="card-elevated border-border/60 rounded-xl">
+            <SelectTrigger className="bg-background border-border mt-1 rounded-md"><SelectValue placeholder="Selecione" /></SelectTrigger>
+            <SelectContent className="glass-elevated rounded-lg">
               {Object.keys(typeConfig).map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
       </div>
       <div>
-        <Label className="text-xs">Resumo da Conversa *</Label>
+        <Label className="text-[11px] font-mono text-muted-foreground">Resumo da Conversa *</Label>
         <Textarea className="bg-transparent border-border/40 mt-1 min-h-[100px] rounded-xl" value={form.summary} onChange={e => set("summary", e.target.value)} />
       </div>
-      <div><Label className="text-xs">Região</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.regiao} onChange={e => set("regiao", e.target.value)} /></div>
+      <div><Label className="text-[11px] font-mono text-muted-foreground">Região</Label><Input className="bg-background border-border mt-1 rounded-md" value={form.regiao} onChange={e => set("regiao", e.target.value)} /></div>
       <div>
-        <Label className="text-xs">Próxima Ação</Label>
-        <Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.proximaAcao} onChange={e => set("proximaAcao", e.target.value)} />
+        <Label className="text-[11px] font-mono text-muted-foreground">Próxima Ação</Label>
+        <Textarea className="bg-background border-border mt-1 rounded-md" value={form.proximaAcao} onChange={e => set("proximaAcao", e.target.value)} />
       </div>
       <div>
-        <Label className="text-xs">Data Prevista Próxima Ação</Label>
-        <Input type="date" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.dataPrevista} onChange={e => set("dataPrevista", e.target.value)} />
+        <Label className="text-[11px] font-mono text-muted-foreground">Data Prevista Próxima Ação</Label>
+        <Input type="date" className="bg-background border-border mt-1 rounded-md" value={form.dataPrevista} onChange={e => set("dataPrevista", e.target.value)} />
       </div>
       <div className="border border-dashed border-border/30 rounded-2xl p-6 text-center text-muted-foreground glass-subtle hover:border-primary/20 transition-colors">
         <Paperclip className="h-5 w-5 mx-auto mb-1 opacity-50" />
-        <p className="text-xs">Arraste arquivos ou cole imagens (Ctrl+V)</p>
+        <p className="text-[11px] font-mono text-muted-foreground">Arraste arquivos ou cole imagens (Ctrl+V)</p>
       </div>
       <div className="flex gap-2">
-        <Button variant="outline" className="flex-1 rounded-xl border-border/30" onClick={onClose} disabled={saving}>Cancelar</Button>
-        <Button className="flex-1 font-display rounded-xl" onClick={handleSave} disabled={saving}>
+        <Button variant="outline" className="flex-1 rounded-lg border-white/[0.08] bg-white/[0.03] text-foreground/50 hover:text-foreground" onClick={onClose} disabled={saving}>Cancelar</Button>
+        <Button className="flex-1 rounded-md font-semibold" onClick={handleSave} disabled={saving}>
           {saving ? <><Loader2 className="h-3 w-3 mr-1 animate-spin" /> Salvando...</> : "Salvar Interação"}
         </Button>
       </div>

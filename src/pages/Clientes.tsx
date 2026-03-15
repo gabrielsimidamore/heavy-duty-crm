@@ -5,7 +5,7 @@ import { useInteractions } from "@/hooks/useInteractions";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, History, Plus, MessageCircle, LayoutGrid, List, User } from "lucide-react";
+import { Search, History, Plus, MessageCircle, LayoutGrid, List, User, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -16,6 +16,7 @@ import { Slider } from "@/components/ui/slider";
 import { motion, AnimatePresence } from "framer-motion";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const statuses: ClientStatus[] = ["Ativo", "Lead", "Prospect", "Inativo", "Sem compras"];
 const tipos: TipoEmpresa[] = ["Federações", "Locadoras", "Seguradoras", "Transportadora", "Associações", "Tecnologia"];
@@ -28,11 +29,10 @@ const kanbanColumns: { status: ClientStatus; color: string }[] = [
 ];
 
 export default function Clientes() {
-  const { clients: initialClients, loading, setClients: setClientsList2 } = useClients();
+  // Usa diretamente do hook — sem estado local duplicado
+  const { clients, loading, addClient, updateClient } = useClients();
   const { interactions } = useInteractions();
-  const [clientsList, setClientsList] = useState<Client[]>([]);
-  const [initialized, setInitialized] = useState(false);
-  if (!initialized && initialClients.length > 0) { setClientsList(initialClients); setInitialized(true); }
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [tipoFilter, setTipoFilter] = useState<string>("all");
@@ -40,7 +40,7 @@ export default function Clientes() {
   const [viewMode, setViewMode] = useState<"table" | "kanban">("table");
   const [showNewClient, setShowNewClient] = useState(false);
 
-  const filtered = clientsList.filter(c => {
+  const filtered = clients.filter(c => {
     const matchSearch = !search || c.contato.toLowerCase().includes(search.toLowerCase()) || c.empresa.toLowerCase().includes(search.toLowerCase()) || (c.cnpj && c.cnpj.includes(search));
     const matchStatus = statusFilter === "all" || c.status === statusFilter;
     const matchTipo = tipoFilter === "all" || c.tipoEmpresa === tipoFilter;
@@ -51,13 +51,16 @@ export default function Clientes() {
     ? interactions.filter(i => i.clientId === selectedClient.id)
     : [];
 
-  const handleDragEnd = useCallback((result: DropResult) => {
+  const handleDragEnd = useCallback(async (result: DropResult) => {
     if (!result.destination) return;
     const clientId = parseInt(result.draggableId);
     const newStatus = result.destination.droppableId as ClientStatus;
-    setClientsList(prev => prev.map(c => c.id === clientId ? { ...c, status: newStatus } : c));
-    toast.success(`Cliente movido para "${newStatus}"`);
-  }, []);
+    const client = clients.find(c => c.id === clientId);
+    if (!client) return;
+    const ok = await updateClient({ ...client, status: newStatus });
+    if (ok) toast.success(`Cliente movido para "${newStatus}"`);
+    else toast.error("Erro ao atualizar status");
+  }, [clients, updateClient]);
 
   return (
     <motion.div className="p-6 space-y-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
@@ -72,7 +75,7 @@ export default function Clientes() {
             </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[85vh] overflow-auto glass-elevated rounded-2xl border-0">
               <DialogHeader><DialogTitle className="font-display text-lg">Novo Cliente</DialogTitle></DialogHeader>
-              <NewClientForm onClose={() => setShowNewClient(false)} />
+              <NewClientForm onClose={() => setShowNewClient(false)} addClient={addClient} />
             </DialogContent>
           </Dialog>
         </div>
@@ -103,6 +106,11 @@ export default function Clientes() {
       <AnimatePresence mode="wait">
         {viewMode === "table" ? (
           <motion.div key="table" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="glass rounded-2xl overflow-hidden w-full">
+            {loading ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Loader2 className="h-6 w-6 mx-auto mb-2 animate-spin opacity-50" />
+              </div>
+            ) : (
             <table className="w-full text-xs" style={{ tableLayout: "fixed" }}>
               <colgroup>
                 <col style={{ width: "16%" }} />
@@ -157,6 +165,7 @@ export default function Clientes() {
                 )}
               </tbody>
             </table>
+            )}
           </motion.div>
         ) : (
           <DragDropContext onDragEnd={handleDragEnd}>
@@ -258,8 +267,13 @@ export default function Clientes() {
                   )}
                 </motion.div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 text-xs border-border/30 hover:bg-foreground/5 rounded-xl"><History className="h-3 w-3 mr-1" /> Ver Histórico</Button>
-                  <Button variant="outline" size="sm" className="flex-1 text-xs border-border/30 hover:bg-foreground/5 rounded-xl"><Plus className="h-3 w-3 mr-1" /> Nova Interação</Button>
+                  <Button variant="outline" size="sm" className="flex-1 text-xs border-border/30 hover:bg-foreground/5 rounded-xl"
+                    onClick={() => { navigate(`/historico?cliente=${selectedClient.id}`); setSelectedClient(null); }}>
+                    <History className="h-3 w-3 mr-1" /> Ver Histórico
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1 text-xs border-border/30 hover:bg-foreground/5 rounded-xl">
+                    <Plus className="h-3 w-3 mr-1" /> Nova Interação
+                  </Button>
                   <Button variant="outline" size="sm" className="text-xs border-border/30 hover:bg-foreground/5 rounded-xl"><MessageCircle className="h-3 w-3" /></Button>
                 </div>
               </div>
@@ -271,8 +285,40 @@ export default function Clientes() {
   );
 }
 
-function NewClientForm({ onClose }: { onClose: () => void }) {
+function NewClientForm({ onClose, addClient }: { onClose: () => void; addClient: (c: any) => Promise<boolean> }) {
   const [score, setScore] = useState([50]);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    contato: "", cargo: "", empresa: "", cnpj: "", telefone: "", whatsapp: "",
+    email: "", site: "", status: "" as ClientStatus | "", tipoEmpresa: "" as TipoEmpresa | "",
+    origemLead: "", regiao: "", endereco: "", frota: "", marcaPrincipal: "",
+    potencialCompra: "", formaPagamento: "", nivelRelacionamento: "", descontoMax: "",
+    concorrentes: "", tipoParceria: "", statusContrato: "", comissao: "", numContrato: "",
+    obsParceria: "", observacoes: "", tags: "",
+  });
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleSave = async () => {
+    if (!form.contato || !form.empresa || !form.status || !form.tipoEmpresa) {
+      toast.error("Preencha os campos obrigatórios: Contato, Empresa, Status e Tipo");
+      return;
+    }
+    setSaving(true);
+    const ok = await addClient({
+      contato: form.contato, empresa: form.empresa, telefone: form.telefone,
+      email: form.email, tipoEmpresa: form.tipoEmpresa as TipoEmpresa,
+      regiao: form.regiao, tipo: form.origemLead || "Lead",
+      frota: form.frota ? parseInt(form.frota) : null,
+      marcaPrincipal: form.marcaPrincipal || "—",
+      status: form.status as ClientStatus,
+      scoreFidelidade: score[0] >= 61 ? "Alto" : score[0] >= 31 ? "Médio" : "Baixo",
+      cnpj: form.cnpj || undefined,
+      observacoes: form.observacoes || undefined,
+    });
+    setSaving(false);
+    if (ok) { toast.success("Cliente salvo com sucesso!"); onClose(); }
+    else toast.error("Erro ao salvar. Tente novamente.");
+  };
 
   return (
     <Tabs defaultValue="dados" className="w-full">
@@ -286,54 +332,44 @@ function NewClientForm({ onClose }: { onClose: () => void }) {
 
       <TabsContent value="dados" className="space-y-4 mt-4">
         <div className="grid grid-cols-2 gap-3">
-          <div><Label className="text-xs">Nome do Contato *</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-          <div><Label className="text-xs">Cargo</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-          <div><Label className="text-xs">Empresa *</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-          <div><Label className="text-xs">CNPJ</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="00.000.000/0000-00" /></div>
-          <div><Label className="text-xs">Telefone</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-          <div><Label className="text-xs">WhatsApp</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-          <div><Label className="text-xs">E-mail</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" type="email" /></div>
-          <div><Label className="text-xs">Site</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" type="url" /></div>
+          <div><Label className="text-xs">Nome do Contato *</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.contato} onChange={e => set("contato", e.target.value)} /></div>
+          <div><Label className="text-xs">Cargo</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.cargo} onChange={e => set("cargo", e.target.value)} /></div>
+          <div><Label className="text-xs">Empresa *</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.empresa} onChange={e => set("empresa", e.target.value)} /></div>
+          <div><Label className="text-xs">CNPJ</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="00.000.000/0000-00" value={form.cnpj} onChange={e => set("cnpj", e.target.value)} /></div>
+          <div><Label className="text-xs">Telefone</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.telefone} onChange={e => set("telefone", e.target.value)} /></div>
+          <div><Label className="text-xs">WhatsApp</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.whatsapp} onChange={e => set("whatsapp", e.target.value)} /></div>
+          <div><Label className="text-xs">E-mail</Label><Input type="email" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.email} onChange={e => set("email", e.target.value)} /></div>
+          <div><Label className="text-xs">Site</Label><Input type="url" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.site} onChange={e => set("site", e.target.value)} /></div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div><Label className="text-xs">Status *</Label>
-            <Select><SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="glass-elevated border-0 rounded-2xl">{statuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select></div>
+            <Select value={form.status} onValueChange={v => set("status", v)}>
+              <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="glass-elevated border-0 rounded-2xl">{statuses.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+            </Select></div>
           <div><Label className="text-xs">Tipo de Empresa *</Label>
-            <Select><SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="glass-elevated border-0 rounded-2xl">{tipos.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select></div>
+            <Select value={form.tipoEmpresa} onValueChange={v => set("tipoEmpresa", v)}>
+              <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="glass-elevated border-0 rounded-2xl">{tipos.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+            </Select></div>
           <div><Label className="text-xs">Origem do Lead</Label>
-            <Select><SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-              <SelectContent className="glass-elevated border-0 rounded-2xl">{["Indicação", "LinkedIn", "E-mail Mkt", "Ligação", "Evento", "Site", "Outro"].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select></div>
-          <div><Label className="text-xs">Região de Atuação</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
+            <Select value={form.origemLead} onValueChange={v => set("origemLead", v)}>
+              <SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent className="glass-elevated border-0 rounded-2xl">{["Indicação", "LinkedIn", "E-mail Mkt", "Ligação", "Evento", "Site", "Outro"].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+            </Select></div>
+          <div><Label className="text-xs">Região de Atuação</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.regiao} onChange={e => set("regiao", e.target.value)} /></div>
         </div>
-        <div><Label className="text-xs">Endereço Completo</Label><Textarea className="bg-transparent border-border/40 mt-1 min-h-[60px] rounded-xl" /></div>
+        <div><Label className="text-xs">Endereço Completo</Label><Textarea className="bg-transparent border-border/40 mt-1 min-h-[60px] rounded-xl" value={form.endereco} onChange={e => set("endereco", e.target.value)} /></div>
       </TabsContent>
 
       <TabsContent value="frota" className="space-y-4 mt-4">
         <div className="grid grid-cols-2 gap-3">
-          {["Quantidade Total de Veículos", "Caminhões Leves", "Caminhões Médios", "Caminhões Pesados", "Carretas", "Ônibus", "Vans/Utilitários", "Automóveis"].map(f => (
-            <div key={f}><Label className="text-xs">{f}</Label><Input type="number" className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-          ))}
+          <div><Label className="text-xs">Quantidade Total de Veículos</Label><Input type="number" className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.frota} onChange={e => set("frota", e.target.value)} /></div>
         </div>
-        <div><Label className="text-xs">Marcas Principais</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="Mercedes-Benz, Volks, Scania..." /></div>
-        <div><Label className="text-xs">Ticket Médio Estimado (R$)</Label><Input type="number" className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-        <div><Label className="text-xs">Observações sobre Frota</Label><Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
+        <div><Label className="text-xs">Marcas Principais</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="Mercedes-Benz, Volks, Scania..." value={form.marcaPrincipal} onChange={e => set("marcaPrincipal", e.target.value)} /></div>
       </TabsContent>
 
       <TabsContent value="comercial" className="space-y-4 mt-4">
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: "Potencial de Compra", options: ["Alto", "Médio", "Baixo"] },
-            { label: "Forma de Pagamento", options: ["Boleto", "PIX", "Cartão", "A prazo", "Consignado"] },
-            { label: "Nível de Relacionamento", options: ["Frio", "Morno", "Quente", "Parceiro Estratégico"] },
-          ].map(sel => (
-            <div key={sel.label}><Label className="text-xs">{sel.label}</Label>
-              <Select><SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                <SelectContent className="glass-elevated border-0 rounded-2xl">{sel.options.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select></div>
-          ))}
-          <div><Label className="text-xs">Desconto Máximo (%)</Label><Input type="number" className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-        </div>
         <div>
           <Label className="text-xs">Score de Fidelidade: {score[0]}</Label>
           <Slider value={score} onValueChange={setScore} max={100} step={1} className="mt-2" />
@@ -341,37 +377,23 @@ function NewClientForm({ onClose }: { onClose: () => void }) {
             <span className="text-destructive">0 - Baixo</span><span className="text-status-prospect">31 - Médio</span><span className="text-primary">61 - Alto</span>
           </div>
         </div>
-        <div><Label className="text-xs">Concorrentes que Atende</Label><Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
+        <div><Label className="text-xs">Concorrentes que Atende</Label><Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.concorrentes} onChange={e => set("concorrentes", e.target.value)} /></div>
       </TabsContent>
 
       <TabsContent value="parceria" className="space-y-4 mt-4">
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: "Tipo de Parceria", options: ["Cliente direto", "Parceiro comercial", "Indicador", "Associação representada", "Plataforma"] },
-            { label: "Status do Contrato", options: ["Sem contrato", "Em negociação", "Contrato enviado", "Aguardando Jurídico", "Assinado", "Encerrado"] },
-          ].map(sel => (
-            <div key={sel.label}><Label className="text-xs">{sel.label}</Label>
-              <Select><SelectTrigger className="bg-transparent border-border/40 mt-1 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                <SelectContent className="glass-elevated border-0 rounded-2xl">{sel.options.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select></div>
-          ))}
-          <div><Label className="text-xs">Comissão/Repasse (%)</Label><Input type="number" className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-          <div><Label className="text-xs">Número do Contrato</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
-        </div>
-        <div><Label className="text-xs">Observações Contratuais</Label><Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" /></div>
+        <div><Label className="text-xs">Observações Contratuais</Label><Textarea className="bg-transparent border-border/40 mt-1 rounded-xl" value={form.obsParceria} onChange={e => set("obsParceria", e.target.value)} /></div>
       </TabsContent>
 
       <TabsContent value="obs" className="space-y-4 mt-4">
-        <div><Label className="text-xs">Observações Gerais</Label><Textarea className="bg-transparent border-border/40 mt-1 min-h-[120px] rounded-xl" placeholder="Informações adicionais sobre o cliente..." /></div>
-        <div><Label className="text-xs">Tags</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="Separe por vírgula: tag1, tag2, tag3" /></div>
-        <div className="border border-dashed border-border/30 rounded-2xl p-8 text-center text-muted-foreground hover:border-primary/20 transition-colors glass-subtle">
-          <p className="text-sm">Arraste arquivos aqui ou clique para selecionar</p>
-          <p className="text-xs mt-1">PDF, DOCX, XLSX, PNG, JPG, WebP</p>
-        </div>
+        <div><Label className="text-xs">Observações Gerais</Label><Textarea className="bg-transparent border-border/40 mt-1 min-h-[120px] rounded-xl" placeholder="Informações adicionais sobre o cliente..." value={form.observacoes} onChange={e => set("observacoes", e.target.value)} /></div>
+        <div><Label className="text-xs">Tags</Label><Input className="bg-transparent border-border/40 mt-1 rounded-xl" placeholder="Separe por vírgula: tag1, tag2, tag3" value={form.tags} onChange={e => set("tags", e.target.value)} /></div>
       </TabsContent>
 
       <div className="flex gap-2 mt-6">
-        <Button variant="outline" className="flex-1 rounded-xl border-border/30" onClick={onClose}>Cancelar</Button>
-        <Button className="flex-1 font-display rounded-xl" onClick={onClose}>Salvar Cliente</Button>
+        <Button variant="outline" className="flex-1 rounded-xl border-border/30" onClick={onClose} disabled={saving}>Cancelar</Button>
+        <Button className="flex-1 font-display rounded-xl" onClick={handleSave} disabled={saving}>
+          {saving ? <><Loader2 className="h-3 w-3 mr-1 animate-spin" /> Salvando...</> : "Salvar Cliente"}
+        </Button>
       </div>
     </Tabs>
   );

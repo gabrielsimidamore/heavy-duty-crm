@@ -74,7 +74,7 @@ export default function Dashboard() {
     .sort((a, b) => (a.dataPrevista || "9999").localeCompare(b.dataPrevista || "9999"))
     .slice(0, 8);
 
-  const today = "2026-03-10";
+  const today = new Date().toISOString().slice(0, 10);
 
   const tooltipStyle = {
     backgroundColor: "hsla(0,0%,6%,0.85)",

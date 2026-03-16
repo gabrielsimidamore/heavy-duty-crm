@@ -36,14 +36,14 @@ export function AppSidebar() {
       <SidebarContent className="flex flex-col h-full overflow-hidden" style={{ background: "#111111" }}>
 
         {/* Logo */}
-        <div className={cn("flex items-center justify-center border-b shrink-0", collapsed ? "px-3 py-3" : "px-4 py-3")} style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+        <div className={cn("flex items-center justify-center border-b shrink-0", collapsed ? "px-3 py-3" : "px-4 py-4")} style={{ borderColor: "rgba(255,255,255,0.08)" }}>
           {collapsed ? (
             <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden">
               <img src="/logo.png" alt="Torke 360" style={{ width: "28px", height: "28px", objectFit: "contain" }} />
             </div>
           ) : (
             <div className="w-full flex items-center justify-center py-1">
-              <img src="/logo.png" alt="Torke 360" style={{ height: "36px", objectFit: "contain" }} />
+              <img src="/logo.png" alt="Torke 360" style={{ height: "48px", objectFit: "contain", maxWidth: "160px" }} />
             </div>
           )}
         </div>

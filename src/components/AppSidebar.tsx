@@ -43,7 +43,7 @@ export function AppSidebar() {
             </div>
           ) : (
             <div className="w-full flex items-center justify-center py-1">
-              <img src="/logo.png" alt="Torke 360" style={{ height: "36px", objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+              <img src="/logo.png" alt="Torke 360" style={{ height: "36px", objectFit: "contain" }} />
             </div>
           )}
         </div>

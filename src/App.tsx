@@ -10,6 +10,7 @@ import Historico from "./pages/Historico";
 import Vendas from "./pages/Vendas";
 import Projetos from "./pages/Projetos";
 import Conteudo from "./pages/Conteudo";
+import AISugestoes from "./pages/AISugestoes";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/vendas" element={<Vendas />} />
             <Route path="/projetos" element={<Projetos />} />
             <Route path="/conteudo" element={<Conteudo />} />
+            <Route path="/ai-sugestoes" element={<AISugestoes />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
